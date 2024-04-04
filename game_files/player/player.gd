@@ -1,14 +1,14 @@
 extends CharacterBody3D
 
 #Variable for normal acceleration applied by the player
-@export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 20, "z" = 20}
+@export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 30, "z" = 20}
 #Variable for added acceleration alongside normal acceleration (for larger jumps, quicker changes in direction, and so on)
 @export var applied_added_acceleration_scalar : Dictionary = {"x" = 20, "y" = 10, "z" = 20}
 
 # Variable for acceleration due to friction (calculated only when player is not "applying" any acceleration)
 @export var friction_acceleration_scalar : int = 25
-# Variable for acceleration due to gravity (on the y axis)
-@export var gravity_acceleration_scalar : int = 2
+# Variable for acceleration due to gravity (on the y axis and calculated when player is not "applying" any acceleration along the y axis (as of writing this the player can only do this through jumping)
+@export var gravity_acceleration_scalar : int = 1
 
 # Variables for the maximum velocity for the player
 @export var max_velocity_scalar : Dictionary = {"x" = 8, "y" = 20, "z" = 8}
@@ -25,7 +25,7 @@ const input_positive_value : Dictionary = {"x" = "move_right", "y" = 0, "z" = "m
 func _init():
 	velocity = Vector3.ZERO
 
-func calculate_ground_acceleration(delta : float):
+func calculate_ground_velocity(delta : float):
 	for plane in ["x", "z"]:
 		if (target_velocity[plane] < 0) and (target_velocity[plane] >= -(max_velocity_scalar[plane])):
 			print("velocity " + plane + " is less than 0 and more than or equal to negative max")
@@ -79,14 +79,27 @@ func lower_velocity():
 	target_velocity["x"] = cos(atan2(target_velocity["z"], target_velocity["x"])) * max_velocity_scalar["x"]
 	target_velocity["z"] = sin(atan2(target_velocity["z"], target_velocity["x"])) * max_velocity_scalar["x"]
 
-func calculate_y_acceleration():
-	pass
+func calculate_y_velocity(delta : float):
+	if (Input.is_action_pressed("jump")) and is_on_floor():
+		target_acceleration["y"] = applied_normal_acceleration_scalar["y"]
+	else:
+		target_acceleration["y"] = -(gravity_acceleration_scalar)
+		if is_on_floor():
+			# This represents the normal force
+			target_acceleration["y"] = 0
+			target_velocity["y"] = 0
+		elif abs(target_velocity["y"]) > max_velocity_scalar["y"]:
+			target_velocity["y"] = max_velocity_scalar["y"] * (abs(target_velocity["y"]) / target_velocity["y"])
+	
+	target_velocity["y"] += target_acceleration["y"]
 
 func _physics_process(delta):
-	print(str(sin(atan2(target_velocity["z"], target_velocity["x"]))))
-	calculate_ground_acceleration(delta)
+	print(str(is_on_floor()))
+	calculate_ground_velocity(delta)
+	calculate_y_velocity(delta)
 	
 	velocity.x = target_velocity["x"]
+	velocity.y = target_velocity["y"]
 	velocity.z = target_velocity["z"]
 	
 	print("final velocity is " + str(velocity))
