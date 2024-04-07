@@ -29,13 +29,13 @@ func calculate_ground_velocity(delta : float):
 	for plane in ["x", "z"]:
 		if (target_velocity[plane] < 0) and (target_velocity[plane] >= -(max_velocity_scalar[plane])):
 			print("velocity " + plane + " is less than 0 and more than or equal to negative max")
-			target_acceleration[plane] = determine_ground_input(plane, input_negative_value[plane], input_positive_value[plane], 0, applied_added_acceleration_scalar[plane])
+			target_acceleration[plane] = determine_ground_input(delta, plane, input_negative_value[plane], input_positive_value[plane], 0, applied_added_acceleration_scalar[plane])
 		elif target_velocity[plane] == 0:
 			print("velocity " + plane + " is 0")
-			target_acceleration[plane] = determine_ground_input(plane, input_negative_value[plane], input_positive_value[plane], 0, 0)
+			target_acceleration[plane] = determine_ground_input(delta, plane, input_negative_value[plane], input_positive_value[plane], 0, 0)
 		elif (target_velocity[plane] > 0) and (target_velocity[plane] <= max_velocity_scalar[plane]):
 			print("velocity " + plane + " is more than 0 and less than or equal to positive max")
-			target_acceleration[plane] = (determine_ground_input(plane, input_negative_value[plane], input_positive_value[plane], -(applied_added_acceleration_scalar[plane]), 0))
+			target_acceleration[plane] = (determine_ground_input(delta, plane, input_negative_value[plane], input_positive_value[plane], -(applied_added_acceleration_scalar[plane]), 0))
 	
 	print("target acceleration is " + str(target_acceleration))
 	
@@ -48,18 +48,23 @@ func calculate_ground_velocity(delta : float):
 		print("resultant target velocity is " + str(pow(pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2), (1/2.0))))
 		
 		if pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) > max_velocity_scalar["x"]:
-			lower_velocity()
+			lower_resultant_velocity()
 
-func determine_ground_input(plane : String, negative_input : String, positive_input : String, added_acceleration_negative : int, added_acceleration_positive : int):
-	var acceleration_to_determine : int
+func determine_ground_input(delta : float, plane : String, negative_input : String, positive_input : String, added_acceleration_negative : int, added_acceleration_positive : int):
+	var acceleration_to_determine : float
+	
+	acceleration_to_determine = 0
 	
 	print(plane + " applied acceleration:")
 	if Input.is_action_pressed(negative_input) == true:
 		acceleration_to_determine = (-(applied_normal_acceleration_scalar[plane]) + added_acceleration_negative)
 	elif Input.is_action_pressed(positive_input) == true:
 		acceleration_to_determine = (applied_normal_acceleration_scalar[plane] + added_acceleration_positive)
+	elif (abs(target_velocity[plane]) - ((applied_normal_acceleration_scalar[plane] + applied_added_acceleration_scalar[plane]) * delta)) < 0:
+		acceleration_to_determine = -(target_velocity[plane]) / delta
 	else:
-		acceleration_to_determine = 0
+		acceleration_to_determine = (target_velocity[plane] / abs(target_velocity[plane]) * -1) * (applied_normal_acceleration_scalar[plane] + applied_added_acceleration_scalar[plane])
+	
 	print("acceleration from input:" + str(acceleration_to_determine))
 	
 	return acceleration_to_determine
@@ -74,7 +79,7 @@ func calculate_friction(delta : float):
 		target_velocity["x"] = cos(atan2(target_velocity["z"], target_velocity["x"])) * (pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) - (friction_acceleration_scalar * delta))
 		target_velocity["z"] = sin(atan2(target_velocity["z"], target_velocity["x"])) * (pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) - (friction_acceleration_scalar * delta))
 
-func lower_velocity():
+func lower_resultant_velocity():
 	print("fixing diagonal velocity")
 	target_velocity["x"] = cos(atan2(target_velocity["z"], target_velocity["x"])) * max_velocity_scalar["x"]
 	target_velocity["z"] = sin(atan2(target_velocity["z"], target_velocity["x"])) * max_velocity_scalar["x"]
