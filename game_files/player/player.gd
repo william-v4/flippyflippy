@@ -21,9 +21,13 @@ var target_velocity : Dictionary = {"x" = 0, "y" = 0, "z" = 0}
 
 const input_negative_value : Dictionary = {"x" = "move_left", "y" = 0, "z" = "move_forward"}
 const input_positive_value : Dictionary = {"x" = "move_right", "y" = 0, "z" = "move_back"}
+# mouse sensitivity
+@export var horizontalmousesens : float = .4
+@export var verticalmousesens : float = .3
 
 func _init():
 	velocity = Vector3.ZERO
+	Input.MOUSE_MODE_CAPTURED
 
 func calculate_ground_velocity(delta : float):
 	# For each plane, determine which keys are being pressed, determining the applied acceleration from the player.
@@ -100,3 +104,14 @@ func _physics_process(delta):
 	velocity.z = target_velocity["z"]
 	
 	move_and_slide()
+
+func _input(event):
+	# camera movement with mouse
+	if event is InputEventMouseMotion:
+		# rotate the player left and right
+		rotate_y(-deg_to_rad(event.relative.x) * horizontalmousesens)
+		# rotate camera up and down
+		$Pivot/Marker3D.rotate_x(-deg_to_rad(event.relative.y) * verticalmousesens)
+		# make sure player doesn't break their neck (rotating over 90 degrees)
+		$Pivot/Marker3D.rotation_degrees.x = clamp($Pivot/Marker3D.rotation_degrees.x, -90, 90)
+	# camera movement with joystick
