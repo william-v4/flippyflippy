@@ -1,12 +1,15 @@
 extends CharacterBody3D
 
-#Variable for normal acceleration applied by the player
+# Signal to indicate to other platforms to switch places
+signal flip_platforms
+
+# Variable for normal acceleration applied by the player
 @export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 600, "z" = 20}
 #Variable for added acceleration alongside normal acceleration (for larger jumps, quicker changes in direction, and so on)
 @export var applied_added_acceleration_scalar : Dictionary = {"x" = 20, "y" = 10, "z" = 20}
 
 # Variable for acceleration due to friction (calculated only when player is not "applying" any acceleration)
-@export var friction_acceleration_scalar : int = 25
+@export var friction_acceleration_scalar : int = 50
 # Variable for acceleration due to gravity (on the y axis and calculated when player is not "applying" any acceleration along the y axis (as of writing this the player can only do this through jumping)
 @export var gravity_acceleration_scalar : int = 5
 
@@ -22,18 +25,29 @@ var target_velocity : Dictionary = {"x" = 0, "y" = 0, "z" = 0}
 const input_negative_value : Dictionary = {"x" = "move_left", "y" = 0, "z" = "move_forward"}
 const input_positive_value : Dictionary = {"x" = "move_right", "y" = 0, "z" = "move_back"}
 
-func _init():
+func _ready():
 	velocity = Vector3.ZERO
 
 func calculate_ground_velocity(delta : float):
 	# For each plane, determine which keys are being pressed, determining the applied acceleration from the player.
 	for plane in ["x", "z"]:
-		if (target_velocity[plane] < 0) and (target_velocity[plane] >= -(max_velocity_scalar[plane])):
+		#if int(target_velocity[plane]) == 0 and int(target_acceleration[plane]) == 0:
+			#print("snapping " + str(plane) + " to 0")
+			#target_velocity[plane] == 0.0000000000000000000000000000000000000000000000000000000000000000000
+			#target_acceleration[plane] == 0.000000000000000000000000000000000000000000000
+		
+		if (target_velocity[plane] < 0.0) and (target_velocity[plane] >= -(max_velocity_scalar[plane])):
+			print(str(plane) + " velocity is less than 0 but more than or equal to negative_max")
 			determine_ground_input(delta, plane, input_negative_value[plane], input_positive_value[plane], 0, applied_added_acceleration_scalar[plane])
-		elif target_velocity[plane] == 0:
+		elif target_velocity[plane] == 0.0:
+			print(str(plane) + " velocity is 0")
 			determine_ground_input(delta, plane, input_negative_value[plane], input_positive_value[plane], 0, 0)
-		elif (target_velocity[plane] > 0) and (target_velocity[plane] <= max_velocity_scalar[plane]):
+		elif (target_velocity[plane] > 0.0) and (target_velocity[plane] <= max_velocity_scalar[plane]):
+			print(str(plane) + " velocity is more than 0 but less than or equal to positive_max")
 			determine_ground_input(delta, plane, input_negative_value[plane], input_positive_value[plane], -(applied_added_acceleration_scalar[plane]), 0)
+	
+	print(str(target_velocity))
+	print(str(target_acceleration))
 	
 	# If the player is not applying acceleration, begin applying friction.
 	if pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) == 0:
@@ -46,6 +60,9 @@ func calculate_ground_velocity(delta : float):
 		# If the resultant velocity is above the maximum velocity scalar defined above, lower the resultant velocity while maintaining the same direction.
 		if pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) > max_velocity_scalar["x"]:
 			lower_resultant_velocity(target_velocity["x"], target_velocity["z"])
+		
+		if pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) > applied_normal_acceleration_scalar["x"]:
+			lower_resultant_acceleration(target_velocity["x"], target_velocity["z"])
 
 func determine_ground_input(delta : float, plane : String, negative_input : String, positive_input : String, added_acceleration_negative : int, added_acceleration_positive : int):
 	if Input.is_action_pressed(negative_input) == true:
@@ -53,10 +70,16 @@ func determine_ground_input(delta : float, plane : String, negative_input : Stri
 	elif Input.is_action_pressed(positive_input) == true:
 		target_acceleration[plane] = (applied_normal_acceleration_scalar[plane] + added_acceleration_positive)
 	#If neither key for the given plane is being pressed, then begin decelerating in that plane.
-	elif (abs(target_velocity[plane]) - ((applied_normal_acceleration_scalar[plane] + applied_added_acceleration_scalar[plane]) * delta)) < 0:
-		target_acceleration[plane] = -(target_velocity[plane]) / delta
-	else:
+	elif abs(target_velocity[plane]) > 0 and (abs(target_velocity[plane]) - ((applied_normal_acceleration_scalar[plane] + applied_added_acceleration_scalar[plane]) * delta)) < 0:
+		target_velocity[plane] = 0
+		target_acceleration[plane] = 0
+		print("snapped accel this, acceleration is now " + str(plane) + str(target_acceleration))
+	elif abs(target_velocity[plane]) > 0:
 		target_acceleration[plane] = (target_velocity[plane] / abs(target_velocity[plane]) * -1) * (applied_normal_acceleration_scalar[plane] + applied_added_acceleration_scalar[plane])
+		print("standard deccel this, acceleration is now " + str(plane) + str(target_acceleration))
+	else:
+		target_acceleration[plane] = 0
+		print("else function, accel is " + str(target_acceleration))
 
 func calculate_friction(delta : float):
 	if (pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) - (friction_acceleration_scalar * delta)) < 0:
@@ -69,6 +92,10 @@ func calculate_friction(delta : float):
 func lower_resultant_velocity(current_x_velocity : float, current_z_velocity : float):
 	target_velocity["x"] = cos(atan2(current_z_velocity, current_x_velocity)) * max_velocity_scalar["x"]
 	target_velocity["z"] = sin(atan2(current_z_velocity, current_x_velocity)) * max_velocity_scalar["z"]
+
+func lower_resultant_acceleration(current_x_acceleration : float, current_z_acceleration : float):
+	target_acceleration["x"] = cos(atan2(current_z_acceleration, current_x_acceleration)) * applied_normal_acceleration_scalar["x"]
+	target_acceleration["z"] = sin(atan2(current_z_acceleration, current_x_acceleration)) * applied_normal_acceleration_scalar["x"]
 
 func calculate_y_velocity(delta : float):
 	# If nothing else below this instruction changes the target acceleration along the y axis, the acceleration due to gravity will bring the player back to the ground.
@@ -91,6 +118,11 @@ func calculate_y_velocity(delta : float):
 		target_velocity["y"] = (target_acceleration["y"] * delta) + target_velocity["y"]
 
 func _physics_process(delta):
+	print("")
+	print("")
+	print("start of new frame")
+	print("target accel at start of frame is " + str(target_acceleration))
+	
 	calculate_ground_velocity(delta)
 	calculate_y_velocity(delta)
 	
@@ -98,5 +130,11 @@ func _physics_process(delta):
 	velocity.x = target_velocity["x"]
 	velocity.y = target_velocity["y"]
 	velocity.z = target_velocity["z"]
+	
+	if Input.is_action_just_pressed("action_key_a"):
+		flip_platforms.emit()
+	
+	#print(str((-(target_velocity["x"]) / delta) * delta))
+	#print(str(target_velocity))
 	
 	move_and_slide()
