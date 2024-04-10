@@ -38,7 +38,7 @@ func calculate_ground_velocity(delta : float):
 			#print("snapping " + str(plane) + " to 0")
 			#target_velocity[plane] == 0.0000000000000000000000000000000000000000000000000000000000000000000
 			#target_acceleration[plane] == 0.000000000000000000000000000000000000000000000
-		
+
 		if (target_velocity[plane] < 0.0) and (target_velocity[plane] >= -(max_velocity_scalar[plane])):
 			print(str(plane) + " velocity is less than 0 but more than or equal to negative_max")
 			determine_ground_input(delta, plane, input_negative_value[plane], input_positive_value[plane], 0, applied_added_acceleration_scalar[plane])
@@ -48,10 +48,10 @@ func calculate_ground_velocity(delta : float):
 		elif (target_velocity[plane] > 0.0) and (target_velocity[plane] <= max_velocity_scalar[plane]):
 			print(str(plane) + " velocity is more than 0 but less than or equal to positive_max")
 			determine_ground_input(delta, plane, input_negative_value[plane], input_positive_value[plane], -(applied_added_acceleration_scalar[plane]), 0)
-	
+
 	print(str(target_velocity))
 	print(str(target_acceleration))
-	
+
 	# If the player is not applying acceleration, begin applying friction.
 	if pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) == 0:
 		calculate_friction(delta)
@@ -59,11 +59,11 @@ func calculate_ground_velocity(delta : float):
 		# Change the velocity by the target acceleration.
 		target_velocity["x"] = (target_acceleration["x"] * delta) + target_velocity["x"]
 		target_velocity["z"] = (target_acceleration["z"] * delta) + target_velocity["z"]
-		
+
 		# If the resultant velocity is above the maximum velocity scalar defined above, lower the resultant velocity while maintaining the same direction.
 		if pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) > max_velocity_scalar["x"]:
 			lower_resultant_velocity(target_velocity["x"], target_velocity["z"])
-		
+
 		if pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) > applied_normal_acceleration_scalar["x"]:
 			lower_resultant_acceleration(target_velocity["x"], target_velocity["z"])
 
@@ -103,18 +103,18 @@ func lower_resultant_acceleration(current_x_acceleration : float, current_z_acce
 func calculate_y_velocity(delta : float):
 	# If nothing else below this instruction changes the target acceleration along the y axis, the acceleration due to gravity will bring the player back to the ground.
 	target_acceleration["y"] = -(gravity_acceleration_scalar)
-	
+
 	if is_on_floor() == true:
 		target_acceleration["y"] = 0
 		target_velocity["y"] = 0
-	
+
 	if (Input.is_action_pressed("jump") == true) and (is_on_floor() == true):
 		target_acceleration["y"] = applied_normal_acceleration_scalar["y"]
-	
+
 	# If the player continues to press the "jump" action after starting the jump from the floor, lower the (scalar) acceleration due to gravity to provide the player more time in the air.
 	if  (Input.is_action_pressed("jump") == true) and (is_on_floor() == false) and (target_velocity["y"] > 0):
 		target_acceleration["y"] = (-(gravity_acceleration_scalar)) + 15
-	
+
 	if abs((target_acceleration["y"] * delta) + target_velocity["y"]) > max_velocity_scalar["y"]:
 		target_velocity["y"] = (abs(target_velocity["y"])/target_velocity["y"]) * max_velocity_scalar["y"]
 	else:
@@ -129,20 +129,20 @@ func _physics_process(delta):
 	print("")
 	print("start of new frame")
 	print("target accel at start of frame is " + str(target_acceleration))
-	
+
 	calculate_ground_velocity(delta)
 	calculate_y_velocity(delta)
-	
+
 	# Apply the target velocity to the velocity variable to be used by move_and_slide().
 	velocity.x = target_velocity["x"]
 	velocity.y = target_velocity["y"]
 	velocity.z = target_velocity["z"]
-	
+
 	if Input.is_action_just_pressed("action_key_a"):
 		flip_platforms.emit()
-	
+
 	#print(str((-(target_velocity["x"]) / delta) * delta))
 	#print(str(target_velocity))
-	
+
 	move_and_slide()
 	checklookingup()
