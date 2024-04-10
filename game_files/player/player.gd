@@ -13,6 +13,9 @@ extends CharacterBody3D
 # Variables for the maximum velocity for the player
 @export var max_velocity_scalar : Dictionary = {"x" = 8, "y" = 100, "z" = 8}
 
+# if the player is looking above 60 degrees
+@export var lookingup : bool
+
 # Variable for the player's "net" acceleration
 var target_acceleration : Dictionary = {"x" = 0, "y" = 0, "z" = 0}
 
@@ -90,6 +93,10 @@ func calculate_y_velocity(delta : float):
 	else:
 		target_velocity["y"] = (target_acceleration["y"] * delta) + target_velocity["y"]
 
+func checklookingup():
+	if $Pivot/Marker3D.rotation_degrees.x >= 60:
+		lookingup = true
+
 func _physics_process(delta):
 	calculate_ground_velocity(delta)
 	calculate_y_velocity(delta)
@@ -100,3 +107,4 @@ func _physics_process(delta):
 	velocity.z = target_velocity["z"]
 	
 	move_and_slide()
+	checklookingup()

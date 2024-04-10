@@ -1,6 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://d1vnfoeg1gd08"]
+[gd_scene load_steps=12 format=3 uid="uid://d1vnfoeg1gd08"]
 
+[ext_resource type="Script" path="res://main/main.gd" id="1_2lblo"]
 [ext_resource type="PackedScene" uid="uid://dn8y81hscrd3m" path="res://player/player.tscn" id="1_31lgw"]
+[ext_resource type="PackedScene" uid="uid://gri2gn2pfppl" path="res://resources/tutorialcurrent.tscn" id="2_32swg"]
+[ext_resource type="PackedScene" uid="uid://c3m8kabpqmg48" path="res://resources/tutorialparallel.tscn" id="3_n2uad"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fc5pv"]
 size = Vector3(20, 1, 30)
@@ -8,19 +11,43 @@ size = Vector3(20, 1, 30)
 [sub_resource type="BoxMesh" id="BoxMesh_3s3ya"]
 size = Vector3(20, 1, 30)
 
+[sub_resource type="Animation" id="Animation_wx5ls"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_4sj7m"]
+resource_name = "rotatebacktocurrent"
+tracks/0/type = "rotation_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 1, 4.37114e-08, 0.5, 1, 0, 0, -1.19209e-07, 1)
+
+[sub_resource type="Animation" id="Animation_rvaib"]
+resource_name = "rotatetoparallel"
+length = 0.5
+tracks/0/type = "rotation_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1, 0.5, 1, 0, 0, 1, -4.37114e-08)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_tr1ou"]
+_data = {
+"RESET": SubResource("Animation_wx5ls"),
+"rotatebacktocurrent": SubResource("Animation_4sj7m"),
+"rotatetoparallel": SubResource("Animation_rvaib")
+}
+
+[sub_resource type="BoxMesh" id="BoxMesh_ajxq3"]
+
 [node name="Main" type="Node"]
+script = ExtResource("1_2lblo")
 
 [node name="Platforms" type="Node3D" parent="."]
-
-[node name="PlatformA" type="StaticBody3D" parent="Platforms"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Platforms/PlatformA"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-shape = SubResource("BoxShape3D_fc5pv")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Platforms/PlatformA"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-mesh = SubResource("BoxMesh_3s3ya")
 
 [node name="PlatformB" type="StaticBody3D" parent="Platforms"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
@@ -33,6 +60,19 @@ shape = SubResource("BoxShape3D_fc5pv")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 mesh = SubResource("BoxMesh_3s3ya")
 
+[node name="TutorialLvL" type="Node3D" parent="Platforms"]
+
+[node name="tutorialcurrent" parent="Platforms/TutorialLvL" instance=ExtResource("2_32swg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
+
+[node name="tutorialparallel" parent="Platforms/TutorialLvL" instance=ExtResource("3_n2uad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Platforms/TutorialLvL"]
+libraries = {
+"": SubResource("AnimationLibrary_tr1ou")
+}
+
 [node name="Player" parent="." instance=ExtResource("1_31lgw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 gravity_acceleration_scalar = 25
@@ -44,3 +84,7 @@ sky_mode = 1
 [node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 20, 0)
 sky_mode = 1
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.42847, 1.91355, -5.28322)
+mesh = SubResource("BoxMesh_ajxq3")
