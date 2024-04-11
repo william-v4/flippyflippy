@@ -1,0 +1,46 @@
+[gd_scene load_steps=6 format=3 uid="uid://cr57n3j1727en"]
+
+[ext_resource type="Script" path="res://main/main.gd" id="1_ruv2g"]
+[ext_resource type="PackedScene" uid="uid://8ao4wuv8ls78" path="res://player/player.tscn" id="2_ascb4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_f2qmg"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="BoxMesh" id="BoxMesh_482mg"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nywnv"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_ruv2g")
+
+[node name="Platforms" type="Node3D" parent="."]
+
+[node name="TutorialLevel" type="Node3D" parent="Platforms"]
+
+[node name="PlaceholderPlatform" type="Node3D" parent="Platforms"]
+
+[node name="PlaceholderBody" type="StaticBody3D" parent="Platforms/PlaceholderPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platforms/PlaceholderPlatform/PlaceholderBody"]
+shape = SubResource("BoxShape3D_f2qmg")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platforms/PlaceholderPlatform/PlaceholderBody"]
+mesh = SubResource("BoxMesh_482mg")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platforms/PlaceholderPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
+mesh = SubResource("BoxMesh_nywnv")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10, 0)
+sky_mode = 1
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 20, 0)
+sky_mode = 1
+
+[node name="Player" parent="." instance=ExtResource("2_ascb4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+friction_acceleration_scalar = 50

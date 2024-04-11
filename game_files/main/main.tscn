@@ -1,5 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://d1vnfoeg1gd08"]
-
+[gd_scene load_steps=14 format=3 uid="uid://d1vnfoeg1gd08"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_2lblo"]
 [ext_resource type="PackedScene" uid="uid://dn8y81hscrd3m" path="res://player/player.tscn" id="1_31lgw"]
@@ -12,7 +11,6 @@ size = Vector3(20, 1, 30)
 
 [sub_resource type="BoxMesh" id="BoxMesh_3s3ya"]
 size = Vector3(20, 1, 30)
-
 
 [sub_resource type="BoxMesh" id="BoxMesh_bjqjc"]
 size = Vector3(2, 2, 2)
@@ -69,7 +67,6 @@ mesh = SubResource("BoxMesh_3s3ya")
 [node name="TestCube" type="MeshInstance3D" parent="Platforms/PlatformA"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
 mesh = SubResource("BoxMesh_bjqjc")
-
 
 [node name="PlatformB" type="StaticBody3D" parent="Platforms"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
