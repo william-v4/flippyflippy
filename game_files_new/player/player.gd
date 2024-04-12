@@ -49,10 +49,16 @@ func calculate_ground_velocity(delta : float):
 	elif pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) == 0:
 		apply_friction(delta)
 	
-	# If the resultant acceleration is above the maximum acceleration scalar defined above, lower the resultant while maintaining the same direction
-	if abs(target_acceleration["x"]) == applied_normal_acceleration_scalar["x"] and abs(target_acceleration["z"]) == applied_normal_acceleration_scalar["x"]:
-		print("lowering resultant accel")
-		lower_resultant_acceleration(target_acceleration["x"], target_acceleration["z"])
+	# If the target_acceleration on both planes are accelerating at applied_normal_acceleration_scalar, then lower the resultant target_acceleration
+	#	to applied_normal_acceleration_scalar, while maintaining the same direction.
+	if pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) == pow((pow(applied_normal_acceleration_scalar["x"], 2) + pow(applied_normal_acceleration_scalar["x"], 2)), 1/2.0):
+		lower_resultant_acceleration(target_acceleration["x"], target_acceleration["z"], applied_normal_acceleration_scalar["x"])
+	
+	# If the target_acceleration on one plane is applied_normal_acceleration_scalar, with the other one accelerating at the combined value of
+	#	applied_normal_acceleration_scalar and applied_added_acceleration_scalar, lower the resultant target_acceleration to the combined value
+	#	of applied_normal_acceleration_scalar and applied_added_acceleration_scalar, while maintaining the same direction.
+	if pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) >= pow((pow(applied_normal_acceleration_scalar["x"], 2) + pow((applied_normal_acceleration_scalar["x"] + applied_added_acceleration_scalar["x"]), 2)), 1/2.0):
+		lower_resultant_acceleration(target_acceleration["x"], target_acceleration["z"], (applied_normal_acceleration_scalar["x"] + applied_added_acceleration_scalar["x"]))
 	
 	# Change the velocity by the target acceleration. Functions apply_friction() or decelerate_plane() have the ability to change target_velocity() of a given plane directly,
 	#	but in both cases, target_acceleration() for that plane is already set to 0, meaning there's no change after running these two commands.
@@ -72,9 +78,9 @@ func determine_ground_input(plane : String, added_acceleration_negative : int, a
 	else:
 		target_acceleration[plane] = 0
 
-func lower_resultant_acceleration(current_x_acceleration : int, current_z_acceleration : int):
-	target_acceleration["x"] = cos(atan2(current_z_acceleration, current_x_acceleration)) * applied_normal_acceleration_scalar["x"]
-	target_acceleration["z"] = sin(atan2(current_z_acceleration, current_x_acceleration)) * applied_normal_acceleration_scalar["z"]
+func lower_resultant_acceleration(current_x_acceleration : int, current_z_acceleration : int, maximum_acceleration : int):
+	target_acceleration["x"] = cos(atan2(current_z_acceleration, current_x_acceleration)) * maximum_acceleration
+	target_acceleration["z"] = sin(atan2(current_z_acceleration, current_x_acceleration)) * maximum_acceleration
 
 func apply_friction(delta : float):
 	# If changing target_velocity by the friction acceleration value will result in a non-zero value, set target_velocity and target_acceleration of that plane to 0.
@@ -120,15 +126,16 @@ func _physics_process(delta):
 	calculate_ground_velocity(delta)
 	calculate_y_velocity(delta)
 	
-	print(str(target_acceleration))
-	print("")
-	print(str(target_velocity))
-	print("")
-	print("")
-	
 	# Apply the target velocity to the velocity variable to be used by move_and_slide().
 	velocity.x = target_velocity["x"]
 	velocity.y = target_velocity["y"]
 	velocity.z = target_velocity["z"]
+	
+	print(str(pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0)))
+	print(str(target_acceleration))
+	print(str(pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0)))
+	print("")
+	print("")
+	print("")
 	
 	move_and_slide()

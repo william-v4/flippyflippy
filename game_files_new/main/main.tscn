@@ -43,4 +43,14 @@ sky_mode = 1
 
 [node name="Player" parent="." instance=ExtResource("2_ascb4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+applied_normal_acceleration_scalar = {
+"x": 30,
+"y": 600,
+"z": 30
+}
+applied_added_acceleration_scalar = {
+"x": 30,
+"y": 10,
+"z": 30
+}
 friction_acceleration_scalar = 50
