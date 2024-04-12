@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 # Variable to pause player's movement
-var pause_movement : bool = true
+var movement_paused : bool = true
 
 # Variable for normal acceleration applied by the player
 @export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 600, "z" = 20}
@@ -36,11 +36,11 @@ func _return():
 func calculate_ground_velocity(delta : float):
 	# Determine the velocity of target_velocity on the x and z axis, respectively.
 	for plane in ["x", "z"]:
-		if (target_velocity[plane] < 0) and (target_velocity[plane] >= -(max_velocity_scalar[plane])):
+		if ((target_velocity[plane] < 0) and (target_velocity[plane] >= -(max_velocity_scalar[plane]))):
 			determine_ground_input(plane, 0, applied_added_acceleration_scalar[plane])
-		elif target_velocity[plane] == 0:
+		elif (target_velocity[plane] == 0):
 			determine_ground_input(plane, 0, 0)
-		elif (target_velocity[plane] > 0) and (target_velocity[plane] <= max_velocity_scalar[plane]):
+		elif ((target_velocity[plane] > 0) and (target_velocity[plane] <= max_velocity_scalar[plane])):
 			determine_ground_input(plane, -(applied_added_acceleration_scalar[plane]), 0)
 	
 	# If the player is only applying acceleration on one plane, begin decelerating the other by (applied_normal_acceleration_scalar + applied_added_acceleration_scalar).
@@ -49,7 +49,7 @@ func calculate_ground_velocity(delta : float):
 	elif (abs(target_acceleration["x"]) > 0) and (target_acceleration["z"] == 0):
 		decelerate_plane(delta, "z")
 	# If the player is not applying acceleration on either plane, begin applying friction.
-	elif pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) == 0:
+	elif (pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) == 0):
 		apply_friction(delta)
 	
 	# If the target_acceleration on both planes are accelerating at applied_normal_acceleration_scalar, then lower the resultant target_acceleration
@@ -69,13 +69,13 @@ func calculate_ground_velocity(delta : float):
 	target_velocity["z"] = (target_acceleration["z"] * delta) + target_velocity["z"]
 	
 	# If the resultant velocity is above the maximum velocity scalar defined above, lower the resultant velocity while maintaining the same direction.
-	if pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) > max_velocity_scalar["x"]:
+	if (pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) > max_velocity_scalar["x"]):
 		lower_resultant_velocity(target_velocity["x"], target_velocity["z"])
 
 func determine_ground_input(plane : String, added_acceleration_negative : int, added_acceleration_positive : int):
-	if Input.is_action_pressed(input_negative_value[plane]) == true:
+	if (Input.is_action_pressed(input_negative_value[plane])):
 		target_acceleration[plane] = (-(applied_normal_acceleration_scalar[plane]) + added_acceleration_negative)
-	elif Input.is_action_pressed(input_positive_value[plane]) == true:
+	elif (Input.is_action_pressed(input_positive_value[plane])):
 		target_acceleration[plane] = (applied_normal_acceleration_scalar[plane] + added_acceleration_positive)
 	# If neither key for the given plane is being pressed, set target_acceleration to 0 as an indicator to the remaining processes in the frame.
 	else:
@@ -87,7 +87,7 @@ func lower_resultant_acceleration(current_x_acceleration : int, current_z_accele
 
 func apply_friction(delta : float):
 	# If changing target_velocity by the friction acceleration value will result in a non-zero value, set target_velocity and target_acceleration of that plane to 0.
-	if (pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) - (friction_acceleration_scalar * delta)) < 0:
+	if ((pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) - (friction_acceleration_scalar * delta)) < 0):
 		target_velocity["x"] = 0
 		target_velocity["z"] = 0
 	else:
@@ -95,7 +95,7 @@ func apply_friction(delta : float):
 		target_velocity["z"] = sin(atan2(target_velocity["z"], target_velocity["x"])) * (pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) - (friction_acceleration_scalar * delta))
 
 func decelerate_plane(delta : float, plane_to_lower : String):
-	if (abs(target_velocity[plane_to_lower]) - ((applied_normal_acceleration_scalar[plane_to_lower]) * delta)) < 0:
+	if ((abs(target_velocity[plane_to_lower]) - ((applied_normal_acceleration_scalar[plane_to_lower]) * delta)) < 0):
 		target_velocity[plane_to_lower] = 0
 	else:
 		target_acceleration[plane_to_lower] = (target_velocity[plane_to_lower] / abs(target_velocity[plane_to_lower]) * -1) * (applied_normal_acceleration_scalar[plane_to_lower])
@@ -108,7 +108,7 @@ func calculate_y_velocity(delta : float):
 	# If nothing else below this instruction changes the target acceleration along the y axis, the acceleration due to gravity will be the only acceleration along the y axis, bringing the player back to the ground.
 	target_acceleration["y"] = -(gravity_acceleration_scalar)
 
-	if is_on_floor() == true:
+	if (is_on_floor()):
 		target_acceleration["y"] = 0
 		target_velocity["y"] = 0
 	
@@ -120,25 +120,38 @@ func calculate_y_velocity(delta : float):
 	if  (Input.is_action_pressed("jump") == true) and (is_on_floor() == false) and (target_velocity["y"] > 0):
 		target_acceleration["y"] = (-(gravity_acceleration_scalar)) + lower_gravity_scalar
 	
-	if abs((target_acceleration["y"] * delta) + target_velocity["y"]) > max_velocity_scalar["y"]:
+	if (abs((target_acceleration["y"] * delta) + target_velocity["y"]) > max_velocity_scalar["y"]):
 		target_velocity["y"] = (abs(target_velocity["y"])/target_velocity["y"]) * max_velocity_scalar["y"]
 	else:
 		target_velocity["y"] = (target_acceleration["y"] * delta) + target_velocity["y"]
 
+# Set target_velocity and target_acceleration to 0 for every plane.
+func reset_movement_values():
+	target_velocity = {"x" = 0, "y" = 0, "z" = 0}
+	target_acceleration = {"x" = 0, "y" = 0, "z" = 0}
+
 func _physics_process(delta):
-	calculate_ground_velocity(delta)
-	calculate_y_velocity(delta)
+	# If the player's movement is not actively paused and the player presses the "return" action, pause the player's movement and signal
+	#	to the other scenes to bring up the main menu (which also serves as the "pause screen")
+	if (Input.is_action_just_pressed("return") and !movement_paused):
+		movement_paused = true
+		reset_movement_values()
+		#signal_to_add
+		#stop_capturing_mouse
+	# If the player's movement is already pauses and the player presses the "return" action, ressume the player's movement and signal
+	#	to the other scenes to return to the game.
+	elif (Input.is_action_just_pressed("return") and movement_paused):
+		movement_paused = false
+		#signal_to_add
+		#continue_capturing_mouse
 	
-	# Apply the target velocity to the velocity variable to be used by move_and_slide().
-	velocity.x = target_velocity["x"]
-	velocity.y = target_velocity["y"]
-	velocity.z = target_velocity["z"]
-	
-	print(str(pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0)))
-	print(str(target_acceleration))
-	print(str(pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0)))
-	print("")
-	print("")
-	print("")
-	
-	move_and_slide()
+	if (!movement_paused):
+		calculate_ground_velocity(delta)
+		calculate_y_velocity(delta)
+		
+		# Apply the target velocity to the velocity variable used by move_and_slide().
+		velocity.x = target_velocity["x"]
+		velocity.y = target_velocity["y"]
+		velocity.z = target_velocity["z"]
+		
+		move_and_slide()
