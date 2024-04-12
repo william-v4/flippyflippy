@@ -1,0 +1,14 @@
+ea4bc82a6ad023ab7ee23ee620429895
+::res://::1712776695
+icon.svg::CompressedTexture2D::2877031120884931334::1712680708::1712680749::1::::<><>::
+::res://main/::1712776625
+main.gd::GDScript::-1::1712776625::0::1::::<>Node<>::
+main.tscn::PackedScene::9028322910192606095::1712776625::0::1::::<><>::res://main/main.gd<>uid://dn8y81hscrd3m::::res://player/player.tscn<>uid://gri2gn2pfppl::::res://resources/tutorialcurrent.tscn<>uid://c3m8kabpqmg48::::res://resources/tutorialparallel.tscn
+::res://player/::1712775674
+player.gd::GDScript::-1::1712681885::0::1::::<>CharacterBody3D<>::
+player.tscn::PackedScene::8141359000524871032::1712775674::0::1::::<><>::res://player/player.gd
+::res://resources/::1712775619
+tutorialcurrent.glb::PackedScene::4384970822666043955::1712249977::1712775440::1::::<><>::
+tutorialcurrent.tscn::PackedScene::456761772494348541::1712775597::0::1::::<><>::
+tutorialparallel.glb::PackedScene::8016594286525814326::1712249977::1712775440::1::::<><>::
+tutorialparallel.tscn::PackedScene::6764923043248365203::1712775619::0::1::::<><>::
