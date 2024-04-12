@@ -132,18 +132,23 @@ func reset_movement_values():
 
 func _physics_process(delta):
 	# If the player's movement is not actively paused and the player presses the "return" action, pause the player's movement and signal
-	#	to the other scenes to bring up the main menu (which also serves as the "pause screen")
+	#	to the other scenes to bring up the main menu (which also serves as the "pause screen").
 	if (Input.is_action_just_pressed("return") and !movement_paused):
+		# Release the mouse cursor and make it visible.
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		# Resume player movement processes
 		movement_paused = true
+		# Reset target_acceleration and target_velocity to 0.
 		reset_movement_values()
 		#signal_to_add
-		#stop_capturing_mouse
 	# If the player's movement is already pauses and the player presses the "return" action, ressume the player's movement and signal
 	#	to the other scenes to return to the game.
 	elif (Input.is_action_just_pressed("return") and movement_paused):
+		# Capture the mouse cursor and make it invisible.
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		# Resume player movement processes.
 		movement_paused = false
 		#signal_to_add
-		#continue_capturing_mouse
 	
 	if (!movement_paused):
 		calculate_ground_velocity(delta)
@@ -153,5 +158,7 @@ func _physics_process(delta):
 		velocity.x = target_velocity["x"]
 		velocity.y = target_velocity["y"]
 		velocity.z = target_velocity["z"]
+		
+		print(str(target_acceleration))
 		
 		move_and_slide()
