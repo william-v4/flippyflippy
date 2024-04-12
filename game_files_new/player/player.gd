@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+# Variable to pause player's movement
+var pause_movement : bool = true
+
 # Variable for normal acceleration applied by the player
 @export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 600, "z" = 20}
 # Variable for added acceleration alongside normal acceleration (for larger jumps, quicker changes in direction, and so on)
