@@ -3,6 +3,10 @@ extends CharacterBody3D
 # Variable to pause player's movement
 var movement_paused : bool = true
 
+# Variables for mouse sensitivity
+@export var horizontal_mouse_sensitivity : float = 0.4
+@export var vertical_mouse_sensitivity : float = 0.3
+
 # Variable for normal acceleration applied by the player
 @export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 600, "z" = 20}
 # Variable for added acceleration alongside normal acceleration (for larger jumps, quicker changes in direction, and so on)
@@ -130,6 +134,16 @@ func reset_movement_values():
 	target_velocity = {"x" = 0, "y" = 0, "z" = 0}
 	target_acceleration = {"x" = 0, "y" = 0, "z" = 0}
 
+func rotate_camera(event):
+	# Rotate the entire player horizontally
+	rotate_y(-(deg_to_rad(event.relative.x) * horizontal_mouse_sensitivity))
+	
+	# Rotate only the Marker3D node vertically (which also rotates the Camera3D child)
+	get_node("Pivot/Marker3D").rotate_x(-(deg_to_rad(event.relative.y) * vertical_mouse_sensitivity))
+	
+	# Clamp the player's  vertical rotation from -90 to 90 degrees
+	get_node("Pivot/Marker3D").set_rotation_degrees(clamp(get_node("Pivot/Marker3D").get_rotation_degrees().x, -90, 90), get_node("Pivot/Marker3D").get_rotation_degrees().y, get_node("Pivot/Marker3D").get_rotation_degrees().z)
+
 func _physics_process(delta):
 	# If the player's movement is not actively paused and the player presses the "return" action, pause the player's movement and signal
 	#	to the other scenes to bring up the main menu (which also serves as the "pause screen").
@@ -159,6 +173,8 @@ func _physics_process(delta):
 		velocity.y = target_velocity["y"]
 		velocity.z = target_velocity["z"]
 		
-		print(str(target_acceleration))
-		
 		move_and_slide()
+
+func _unhandled_input(event):
+	if ((event == InputEventMouseMotion) and (!movement_paused)):
+		rotate_camera(InputEventMouseMotion)
