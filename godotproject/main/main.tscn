@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_7b45r"]
 [ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://player/player.tscn" id="2_iyr3n"]
-[ext_resource type="PackedScene" uid="uid://1whi2wpesb8i" path="res://resources/lvl_1_current.tscn" id="3_t3y6y"]
-[ext_resource type="PackedScene" uid="uid://ctclmqtwmqt3c" path="res://resources/lvl_1_parallel.tscn" id="4_kajky"]
+[ext_resource type="PackedScene" uid="uid://1whi2wpesb8i" path="res://resources/levels/tutorial_level/platforms/lvl_1_current.tscn" id="3_t3y6y"]
+[ext_resource type="PackedScene" uid="uid://ctclmqtwmqt3c" path="res://resources/levels/tutorial_level/platforms/lvl_1_parallel.tscn" id="4_kajky"]
 
 [sub_resource type="Animation" id="Animation_y6xo5"]
 length = 0.001
