@@ -77,7 +77,7 @@ libraries = {
 "": SubResource("AnimationLibrary_hg7b7")
 }
 
-[node name="main" type="WorldEnvironment" parent="."]
+[node name="MainWorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_qurug")
 
 [node name="Player" parent="." instance=ExtResource("2_iyr3n")]
