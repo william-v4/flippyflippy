@@ -37,8 +37,8 @@ var mousesensy : float = 0.1
 
 func _ready():
 	velocity = Vector3.ZERO
-	# capture the mouse cursor
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	# pause the game at the start
+	paused = true
 
 func calculate_ground_velocity(delta : float):
 	# Determine the velocity of target_velocity on the x and z axis, respectively.
@@ -120,11 +120,11 @@ func calculate_y_velocity(delta : float):
 		target_velocity["y"] = 0
 	
 	# If the player is on the ground and presses the jump action key, begin a jump.
-	if (Input.is_action_pressed("jump") == true) and (is_on_floor() == true):
+	if (Input.is_action_pressed("jump") and is_on_floor()):
 		target_acceleration["y"] = applied_normal_acceleration_scalar["y"]
 	
 	# If the player continues to press the "jump" action after starting the jump from the floor, lower the (scalar) acceleration due to gravity to provide the player more time in the air.
-	if  (Input.is_action_pressed("jump") == true) and (is_on_floor() == false) and (target_velocity["y"] > 0):
+	if  (Input.is_action_pressed("jump") and is_on_floor() and (target_velocity["y"] > 0)):
 		target_acceleration["y"] = (-(gravity_acceleration_scalar)) + lower_gravity_scalar
 	
 	if (abs((target_acceleration["y"] * delta) + target_velocity["y"]) > max_velocity_scalar["y"]):
@@ -133,22 +133,22 @@ func calculate_y_velocity(delta : float):
 		target_velocity["y"] = (target_acceleration["y"] * delta) + target_velocity["y"]
 
 func checklookingup():
-	if $Pivot/Marker3D.rotation_degrees.x >= 60:
+	if ($Pivot/Marker3D.rotation_degrees.x >= 60):
 		lookingup = true
 
 # pausing the game and capturing/releasing the cursor
 func pauser():
-	if !paused and Input.is_action_just_pressed("pause"):
-		paused = true
+	if (Input.is_action_just_pressed("return") and !paused):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	if paused and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		paused = false
+		paused = true
+	elif (Input.is_action_just_pressed("return") and paused):
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		paused = false
 
 # runs whenever input is received
 func _unhandled_input(event):
 	# camera movement with mouse
-	if event is InputEventMouseMotion and !paused:
+	if (event is InputEventMouseMotion and !paused):
 		# rotate the player left and right
 		rotate_y(-deg_to_rad(event.relative.x) * mousesensx)
 		# rotate camera up and down
@@ -159,12 +159,15 @@ func _unhandled_input(event):
 # runs continuously
 func _physics_process(delta):
 	pauser()
+	print("paused is: " + str(paused))
+	print("return just being pressed is: " + str(Input.is_action_just_pressed("return")))
+	print("")
+	print("")
 	
-	if !paused:
+	if (!paused):
 		calculate_ground_velocity(delta)
 		calculate_y_velocity(delta)
 		
-		print(str(rad_to_deg(rotation.y)))
 		
 		# Apply the target velocity to the velocity variable to be used by move_and_slide(),
 		#	taking into account the player's rotation.
@@ -175,8 +178,5 @@ func _physics_process(delta):
 		if Input.is_action_just_pressed("action_key_a"):
 			flip_platforms.emit()
 		
-		#print(str((-(target_velocity["x"]) / delta) * delta))
-		#print(str(target_velocity))
-		# stop movement when paused
 		move_and_slide()
 		checklookingup()
