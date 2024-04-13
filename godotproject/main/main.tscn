@@ -1,9 +1,9 @@
 [gd_scene load_steps=11 format=3 uid="uid://crjfekrbdt25r"]
 
-[ext_resource type="PackedScene" uid="uid://1whi2wpesb8i" path="res://resources/lvl_1_current.tscn" id="1_ajv38"]
-[ext_resource type="Script" path="res://main.gd" id="1_nn3u2"]
-[ext_resource type="PackedScene" uid="uid://ctclmqtwmqt3c" path="res://resources/lvl_1_parallel.tscn" id="2_758nj"]
-[ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://player.tscn" id="4_nh5xh"]
+[ext_resource type="Script" path="res://main/main.gd" id="1_7b45r"]
+[ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://player.tscn" id="2_iyr3n"]
+[ext_resource type="PackedScene" uid="uid://1whi2wpesb8i" path="res://resources/lvl_1_current.tscn" id="3_t3y6y"]
+[ext_resource type="PackedScene" uid="uid://ctclmqtwmqt3c" path="res://resources/lvl_1_parallel.tscn" id="4_kajky"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o4if0"]
 sky_top_color = Color(0.152941, 0, 0.588235, 1)
@@ -61,18 +61,18 @@ _data = {
 
 [node name="main" type="WorldEnvironment"]
 environment = SubResource("Environment_qurug")
-script = ExtResource("1_nn3u2")
+script = ExtResource("1_7b45r")
 
-[node name="Player" parent="." instance=ExtResource("4_nh5xh")]
+[node name="Player" parent="." instance=ExtResource("2_iyr3n")]
 
 [node name="platforms" type="Node3D" parent="."]
 
 [node name="tutorialLVL" type="Node3D" parent="platforms"]
 
-[node name="lvl1current" parent="platforms/tutorialLVL" instance=ExtResource("1_ajv38")]
+[node name="lvl1current" parent="platforms/tutorialLVL" instance=ExtResource("3_t3y6y")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
 
-[node name="lvl1parallel" parent="platforms/tutorialLVL" instance=ExtResource("2_758nj")]
+[node name="lvl1parallel" parent="platforms/tutorialLVL" instance=ExtResource("4_kajky")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="platforms/tutorialLVL"]
