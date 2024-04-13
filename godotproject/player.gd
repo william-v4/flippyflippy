@@ -4,7 +4,7 @@ extends CharacterBody3D
 signal flip_platforms
 
 # Variable for normal acceleration applied by the player
-@export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 600, "z" = 20}
+@export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 200, "z" = 20}
 #Variable for added acceleration alongside normal acceleration (for larger jumps, quicker changes in direction, and so on)
 @export var applied_added_acceleration_scalar : Dictionary = {"x" = 20, "y" = 10, "z" = 20}
 
@@ -13,7 +13,7 @@ signal flip_platforms
 # Variable for acceleration due to gravity (on the y axis and calculated when player is not "applying" any acceleration along the y axis (as of writing this the player can only do this through jumping)
 @export var gravity_acceleration_scalar : int = 5
 # Variable for acceleration added alongside the downwards acceleration from gravity (this is when the player holds the jump action key for longer, leaving the player up in the air for longer)
-@export var lower_gravity_scalar : int = 8
+@export var lower_gravity_scalar : int = 2
 
 # Variables for the maximum velocity for the player
 @export var max_velocity_scalar : Dictionary = {"x" = 8, "y" = 100, "z" = 8}
@@ -164,10 +164,13 @@ func _physics_process(delta):
 		calculate_ground_velocity(delta)
 		calculate_y_velocity(delta)
 		
-		# Apply the target velocity to the velocity variable to be used by move_and_slide().
-		velocity.x = target_velocity["x"]
+		print(str(rad_to_deg(rotation.y)))
+		
+		# Apply the target velocity to the velocity variable to be used by move_and_slide(),
+		#	taking into account the player's rotation.
+		velocity.x = (cos(rotation.y) * target_velocity["x"]) + (sin(rotation.y) * target_velocity["z"])
 		velocity.y = target_velocity["y"]
-		velocity.z = target_velocity["z"]
+		velocity.z = (cos(rotation.y) * target_velocity["z"]) + (-(sin(rotation.y) * target_velocity["x"]))
 		
 		if Input.is_action_just_pressed("action_key_a"):
 			flip_platforms.emit()
