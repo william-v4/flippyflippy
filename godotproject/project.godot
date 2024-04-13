@@ -59,6 +59,14 @@ return={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_1="player"
+3d_physics/layer_2="platform_walls"
+3d_physics/layer_3="spacetime"
+3d_physics/layer_4="harmful_objects"
+3d_physics/layer_5="portal"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
