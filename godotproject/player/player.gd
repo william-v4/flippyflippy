@@ -29,8 +29,10 @@ var target_velocity : Dictionary = {"x" = 0, "y" = 0, "z" = 0}
 
 const input_negative_value : Dictionary = {"x" = "move_left", "y" = 0, "z" = "move_forward"}
 const input_positive_value : Dictionary = {"x" = "move_right", "y" = 0, "z" = "move_back"}
+
 # if the game is paused or not
 @export var paused : bool
+
 # vertical and horizontal mouse sensitivity
 var mousesensx : float = 0.2
 var mousesensy : float = 0.1

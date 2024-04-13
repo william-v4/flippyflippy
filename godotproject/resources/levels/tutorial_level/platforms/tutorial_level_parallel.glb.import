@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://esgs1fwn0kxj"
-path="res://.godot/imported/lvl1current.glb-ad9c54afec3bb03765b4f99b35353ba1.scn"
+uid="uid://n4i2k7fq48tm"
+path="res://.godot/imported/tutorial_level_parallel.glb-1063b2d71d674dd787f5aa3914f4f28a.scn"
 
 [deps]
 
-source_file="res://resources/levels/tutorial_level/platforms/lvl1current.glb"
-dest_files=["res://.godot/imported/lvl1current.glb-ad9c54afec3bb03765b4f99b35353ba1.scn"]
+source_file="res://resources/levels/tutorial_level/platforms/tutorial_level_parallel.glb"
+dest_files=["res://.godot/imported/tutorial_level_parallel.glb-1063b2d71d674dd787f5aa3914f4f28a.scn"]
 
 [params]
 
