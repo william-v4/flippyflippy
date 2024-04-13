@@ -5,23 +5,6 @@
 [ext_resource type="PackedScene" uid="uid://1whi2wpesb8i" path="res://resources/lvl_1_current.tscn" id="3_t3y6y"]
 [ext_resource type="PackedScene" uid="uid://ctclmqtwmqt3c" path="res://resources/lvl_1_parallel.tscn" id="4_kajky"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o4if0"]
-sky_top_color = Color(0.152941, 0, 0.588235, 1)
-sky_horizon_color = Color(0, 0.768627, 0.588235, 1)
-ground_bottom_color = Color(0, 0, 0, 1)
-ground_horizon_color = Color(0.505882, 0.00392157, 0.741176, 1)
-sun_curve = 1e-05
-
-[sub_resource type="Sky" id="Sky_71glp"]
-sky_material = SubResource("ProceduralSkyMaterial_o4if0")
-
-[sub_resource type="Environment" id="Environment_qurug"]
-background_mode = 2
-sky = SubResource("Sky_71glp")
-ambient_light_source = 3
-fog_enabled = true
-fog_light_color = Color(0.105882, 0.862745, 0.866667, 1)
-
 [sub_resource type="Animation" id="Animation_y6xo5"]
 length = 0.001
 tracks/0/type = "value"
@@ -59,11 +42,25 @@ _data = {
 "rotatetoparallel": SubResource("Animation_cs7mw")
 }
 
-[node name="main" type="WorldEnvironment"]
-environment = SubResource("Environment_qurug")
-script = ExtResource("1_7b45r")
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o4if0"]
+sky_top_color = Color(0.152941, 0, 0.588235, 1)
+sky_horizon_color = Color(0, 0.768627, 0.588235, 1)
+ground_bottom_color = Color(0, 0, 0, 1)
+ground_horizon_color = Color(0.505882, 0.00392157, 0.741176, 1)
+sun_curve = 1e-05
 
-[node name="Player" parent="." instance=ExtResource("2_iyr3n")]
+[sub_resource type="Sky" id="Sky_71glp"]
+sky_material = SubResource("ProceduralSkyMaterial_o4if0")
+
+[sub_resource type="Environment" id="Environment_qurug"]
+background_mode = 2
+sky = SubResource("Sky_71glp")
+ambient_light_source = 3
+fog_enabled = true
+fog_light_color = Color(0.105882, 0.862745, 0.866667, 1)
+
+[node name="Main" type="Node"]
+script = ExtResource("1_7b45r")
 
 [node name="platforms" type="Node3D" parent="."]
 
@@ -79,3 +76,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 libraries = {
 "": SubResource("AnimationLibrary_hg7b7")
 }
+
+[node name="main" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_qurug")
+
+[node name="Player" parent="." instance=ExtResource("2_iyr3n")]
