@@ -40,6 +40,10 @@ func _ready():
 	# pause the game at the start
 	paused = true
 
+func reset_player_movement():
+	target_acceleration = {"x" = 0, "y" = 0, "z" = 0}
+	target_velocity = {"x" = 0, "y" = 0, "z" = 0}
+
 func calculate_ground_velocity(delta : float):
 	# Determine the velocity of target_velocity on the x and z axis, respectively.
 	for plane in ["x", "z"]:
@@ -140,6 +144,7 @@ func checklookingup():
 func pauser():
 	if (Input.is_action_just_pressed("return") and !paused):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		reset_player_movement()
 		paused = true
 	elif (Input.is_action_just_pressed("return") and paused):
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -159,15 +164,10 @@ func _unhandled_input(event):
 # runs continuously
 func _physics_process(delta):
 	pauser()
-	print("paused is: " + str(paused))
-	print("return just being pressed is: " + str(Input.is_action_just_pressed("return")))
-	print("")
-	print("")
 	
 	if (!paused):
 		calculate_ground_velocity(delta)
 		calculate_y_velocity(delta)
-		
 		
 		# Apply the target velocity to the velocity variable to be used by move_and_slide(),
 		#	taking into account the player's rotation.
