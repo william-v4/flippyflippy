@@ -1,3 +1,5 @@
 [gd_scene format=3 uid="uid://cekeiamqjcni0"]
 
 [node name="TutorialLevel" type="Node3D"]
+
+[node name="Spacetime" type="Node3D" parent="."]
