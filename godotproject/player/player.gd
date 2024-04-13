@@ -126,11 +126,11 @@ func calculate_y_velocity(delta : float):
 		target_velocity["y"] = 0
 	
 	# If the player is on the ground and presses the jump action key, begin a jump.
-	if (Input.is_action_pressed("jump") and is_on_floor()):
+	if (Input.is_action_pressed("jump") and is_on_floor() and !get_parent().rotating):
 		target_acceleration["y"] = applied_normal_acceleration_scalar["y"]
 	
 	# If the player continues to press the "jump" action after starting the jump from the floor, lower the (scalar) acceleration due to gravity to provide the player more time in the air.
-	if  (Input.is_action_pressed("jump") and is_on_floor() and (target_velocity["y"] > 0)):
+	if  (Input.is_action_pressed("jump") and is_on_floor() and !get_parent().rotating and (target_velocity["y"] > 0)):
 		target_acceleration["y"] = (-(gravity_acceleration_scalar)) + lower_gravity_scalar
 	
 	if (abs((target_acceleration["y"] * delta) + target_velocity["y"]) > max_velocity_scalar["y"]):
@@ -141,6 +141,7 @@ func calculate_y_velocity(delta : float):
 func checklookingup():
 	if (get_node("Pivot/CameraMarker").rotation_degrees.x >= 60):
 		lookingup = true
+
 # pausing the game and capturing/releasing the cursor
 func pauser():
 	if (Input.is_action_just_pressed("return") and !paused):
@@ -169,9 +170,6 @@ func _physics_process(delta):
 	if (!paused):
 		calculate_ground_velocity(delta)
 		calculate_y_velocity(delta)
-		
-		print("target accel is: " + str(target_acceleration))
-		print("target vel is: " + str(target_velocity))
 		
 		# Apply the target velocity to the velocity variable to be used by move_and_slide(),
 		#	taking into account the player's rotation.
