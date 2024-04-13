@@ -139,7 +139,7 @@ func calculate_y_velocity(delta : float):
 		target_velocity["y"] = (target_acceleration["y"] * delta) + target_velocity["y"]
 
 func checklookingup():
-	if (get_node("Pivot/Marker3D").rotation_degrees.x >= 60):
+	if (get_node("Pivot/CameraMarker").rotation_degrees.x >= 60):
 		lookingup = true
 # pausing the game and capturing/releasing the cursor
 func pauser():
@@ -158,9 +158,9 @@ func _unhandled_input(event):
 		# rotate the player left and right
 		rotate_y(-deg_to_rad(event.relative.x) * mousesensx)
 		# rotate camera up and down
-		get_node("Pivot/Marker3D").rotate_x(-deg_to_rad(event.relative.y) * mousesensy)
+		get_node("Pivot/CameraMarker").rotate_x(-deg_to_rad(event.relative.y) * mousesensy)
 		# make sure player doesn't break their neck (rotating over 90 degrees)
-		get_node("Pivot/Marker3D").rotation_degrees.x = clamp(get_node("Pivot/Marker3D").rotation_degrees.x, -90, 90)
+		get_node("Pivot/CameraMarker").rotation_degrees.x = clamp(get_node("Pivot/CameraMarker").rotation_degrees.x, -90, 90)
 
 # runs continuously
 func _physics_process(delta):
@@ -169,6 +169,9 @@ func _physics_process(delta):
 	if (!paused):
 		calculate_ground_velocity(delta)
 		calculate_y_velocity(delta)
+		
+		print("target accel is: " + str(target_acceleration))
+		print("target vel is: " + str(target_velocity))
 		
 		# Apply the target velocity to the velocity variable to be used by move_and_slide(),
 		#	taking into account the player's rotation.
