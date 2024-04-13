@@ -62,17 +62,17 @@ fog_light_color = Color(0.105882, 0.862745, 0.866667, 1)
 [node name="Main" type="Node"]
 script = ExtResource("1_7b45r")
 
-[node name="platforms" type="Node3D" parent="."]
+[node name="Platforms" type="Node3D" parent="."]
 
-[node name="tutorialLVL" type="Node3D" parent="platforms"]
+[node name="tutorialLVL" type="Node3D" parent="Platforms"]
 
-[node name="lvl1current" parent="platforms/tutorialLVL" instance=ExtResource("3_t3y6y")]
+[node name="lvl1current" parent="Platforms/tutorialLVL" instance=ExtResource("3_t3y6y")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
 
-[node name="lvl1parallel" parent="platforms/tutorialLVL" instance=ExtResource("4_kajky")]
+[node name="lvl1parallel" parent="Platforms/tutorialLVL" instance=ExtResource("4_kajky")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="platforms/tutorialLVL"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Platforms/tutorialLVL"]
 libraries = {
 "": SubResource("AnimationLibrary_hg7b7")
 }
