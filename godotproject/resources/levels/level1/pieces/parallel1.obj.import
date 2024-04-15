@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://b8nhqje7kbqjs"
+path="res://.godot/imported/parallel1.obj-60b5ebb0e17bf910247baa3db75fd04f.mesh"
+
+[deps]
+
+files=["res://.godot/imported/parallel1.obj-60b5ebb0e17bf910247baa3db75fd04f.mesh"]
+
+source_file="res://resources/levels/level1/pieces/parallel1.obj"
+dest_files=["res://.godot/imported/parallel1.obj-60b5ebb0e17bf910247baa3db75fd04f.mesh", "res://.godot/imported/parallel1.obj-60b5ebb0e17bf910247baa3db75fd04f.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false
