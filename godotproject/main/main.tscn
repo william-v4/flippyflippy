@@ -135,6 +135,7 @@ libraries = {
 }
 
 [node name="MenuLabel" type="Label" parent="MenuElements"]
+layout_mode = 0
 offset_right = 157.0
 offset_bottom = 49.0
 text = "Game paused
