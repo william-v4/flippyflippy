@@ -1,8 +1,5 @@
 extends CharacterBody3D
 
-# Signal to indicate to other platforms to switch places
-signal flip_platforms
-
 # Variable for normal acceleration applied by the player
 @export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 200, "z" = 20}
 #Variable for added acceleration alongside normal acceleration (for larger jumps, quicker changes in direction, and so on)
@@ -27,20 +24,36 @@ var target_acceleration : Dictionary = {"x" = 0, "y" = 0, "z" = 0}
 # Variable for the player's target velocity (to be passed to the proper "velocity" variable be used for move_and_slide() to complete the remaining physics processes)
 var target_velocity : Dictionary = {"x" = 0, "y" = 0, "z" = 0}
 
+var camera_marker : Object
+var camera : Object
+var main : Object
+
 const input_negative_value : Dictionary = {"x" = "move_left", "y" = 0, "z" = "move_forward"}
 const input_positive_value : Dictionary = {"x" = "move_right", "y" = 0, "z" = "move_back"}
 
 # if the game is paused or not
-@export var paused : bool
+var movement_paused : bool
 
 # vertical and horizontal mouse sensitivity
 var mousesensx : float = 0.2
 var mousesensy : float = 0.1
 
 func _ready():
+	camera_marker = get_node("PlayerCameraMarker")
+	camera = get_node("PlayerCameraMarker/Camera3D")
+	main = get_parent()
+	
+	main.hit_spike.connect(_on_main_hit_spike)
+	
+	get_node('PlayerMesh').set_visible(true)
+	
 	velocity = Vector3.ZERO
-	# pause the game at the start
-	paused = true
+
+func is_movement_paused():
+	return movement_paused
+
+func set_movement_paused(input_value : bool):
+	movement_paused = input_value
 
 func reset_player_movement():
 	target_acceleration = {"x" = 0, "y" = 0, "z" = 0}
@@ -138,36 +151,24 @@ func calculate_y_velocity(delta : float):
 	else:
 		target_velocity["y"] = (target_acceleration["y"] * delta) + target_velocity["y"]
 
-func checklookingup():
-	if (get_node("Pivot/CameraMarker").rotation_degrees.x >= 60):
+func check_looking_up():
+	if (camera_marker.rotation_degrees.x >= 60):
 		lookingup = true
 
-# pausing the game and capturing/releasing the cursor
-func pauser():
-	if (Input.is_action_just_pressed("return") and !paused):
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		reset_player_movement()
-		paused = true
-	elif (Input.is_action_just_pressed("return") and paused):
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		paused = false
-
 # runs whenever input is received
-func _unhandled_input(event):
+func _input(event):
 	# camera movement with mouse
-	if (event is InputEventMouseMotion and !paused):
+	if ((event is InputEventMouseMotion) and !movement_paused):
 		# rotate the player left and right
 		rotate_y(-deg_to_rad(event.relative.x) * mousesensx)
 		# rotate camera up and down
-		get_node("Pivot/CameraMarker").rotate_x(-deg_to_rad(event.relative.y) * mousesensy)
+		camera_marker.rotate_x(-deg_to_rad(event.relative.y) * mousesensy)
 		# make sure player doesn't break their neck (rotating over 90 degrees)
-		get_node("Pivot/CameraMarker").rotation_degrees.x = clamp(get_node("Pivot/CameraMarker").rotation_degrees.x, -90, 90)
+		camera_marker.rotation_degrees.x = clamp(camera_marker.rotation_degrees.x, -90, 90)
 
 # runs continuously
-func _physics_process(delta):
-	pauser()
-	
-	if (!paused):
+func _physics_process(delta):	
+	if (!movement_paused):
 		calculate_ground_velocity(delta)
 		calculate_y_velocity(delta)
 		
@@ -177,8 +178,8 @@ func _physics_process(delta):
 		velocity.y = target_velocity["y"]
 		velocity.z = (cos(rotation.y) * target_velocity["z"]) + (-(sin(rotation.y) * target_velocity["x"]))
 		
-		if Input.is_action_just_pressed("action_key_a"):
-			flip_platforms.emit()
-		
 		move_and_slide()
-		checklookingup()
+		check_looking_up()
+
+func _on_main_hit_spike():
+	pass
