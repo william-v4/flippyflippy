@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cekeiamqjcni0"]
+[gd_scene load_steps=8 format=3 uid="uid://cekeiamqjcni0"]
 
 [ext_resource type="PackedScene" uid="uid://1whi2wpesb8i" path="res://resources/levels/tutorial_level/platforms/tutorial_level_main.tscn" id="1_cvn1k"]
 [ext_resource type="PackedScene" uid="uid://ctclmqtwmqt3c" path="res://resources/levels/tutorial_level/platforms/tutorial_level_parallel.tscn" id="2_xbmp1"]
@@ -38,6 +38,9 @@ _data = {
 "rotatetoparallel": SubResource("Animation_cs7mw")
 }
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_bfe5m"]
+size = Vector3(100, 1, 45)
+
 [node name="TutorialLevel" type="Node3D"]
 
 [node name="LevelComponents" type="Node3D" parent="."]
@@ -52,7 +55,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
 [node name="TransitionPlatform" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -20)
 collision_layer = 2
-collision_mask = 0
 
 [node name="PlatformCollisionShape" type="CollisionShape3D" parent="TransitionPlatform"]
 shape = SubResource("BoxShape3D_nem2g")
@@ -62,3 +64,10 @@ disabled = true
 libraries = {
 "": SubResource("AnimationLibrary_hg7b7")
 }
+
+[node name="FallDetector" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10, -20)
+collision_layer = 32
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FallDetector"]
+shape = SubResource("BoxShape3D_bfe5m")

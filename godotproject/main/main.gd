@@ -1,7 +1,5 @@
 extends Node
 
-signal hit_spike
-
 var player : Object
 var player_camera_marker : Object
 var camera : Object
@@ -16,6 +14,7 @@ var black_screen : Object
 var menu_label : Object
 
 var paused : bool = true
+var game_over : bool = false
 
 var current_level_path : String = "Levels/TutorialLevel/"
 # current platform of the level (see Platform enum for values)
@@ -29,6 +28,7 @@ var screen_status : int
 enum Platform {MAIN, PARALLEL}
 enum Transition {NONE, ZOOM_OUT, ZOOM_IN}
 enum Screen {STANDARD, FADE_OUT, FADE_IN}
+enum Message {INTRO, PAUSE, RESTART}
 
 const main_base_platform_collision_shape : String = "LevelComponents/MainPlatform/BasePlatform/PlatformCollisionShape"
 const main_spikes_collision_shape : String = "LevelComponents/MainPlatform/HarmfulObjects/Spikes/SpikesCollisionShape"
@@ -42,13 +42,15 @@ func _ready():
 	get_node_names()
 	
 	player.set_movement_paused(true)
+	player.player_died.connect(_on_player_died)
+	
 	screen_status = Screen.STANDARD
 	transition_status = Transition.NONE
 	
 	menu_label.set_visible(false)
 	
 	disable_platform_physics(false, true)
-	request_pause_menu(true)
+	request_pause_menu(Message.INTRO)
 
 func get_node_names():
 	player = get_node("Player")
@@ -95,6 +97,11 @@ func check_menu_transition_status():
 		connect_to_new_parent(player_camera_marker, player, self)
 		connect_to_new_parent(camera, player_camera_marker, player_tracker)
 		connect_to_new_parent(camera, player_tracker, main_camera_marker)
+		
+		if (game_over):
+			player.reset_position()
+			player.reset_rotation()
+			player_tracker.set_position(Vector3((player.get_position().x), 1.5, (player.get_position().z)))
 		
 		zoom_out()
 		
@@ -155,14 +162,14 @@ func switch_menu_if_requested():
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		player.reset_player_movement()
 		player.set_movement_paused(true)
-		request_pause_menu(false)
+		request_pause_menu(Message.PAUSE)
 		paused = true
 	elif (Input.is_action_just_pressed("return") and paused and transition_status == Transition.NONE and screen_status == Screen.STANDARD):
 		print("resume requested")
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		request_resume()
 
-func request_pause_menu(intro : bool):
+func request_pause_menu(message : int):
 	# Get x and z value of player to be used during transition
 	player_tracker.set_position(Vector3((player.get_position().x), 1.5, (player.get_position().z)))
 	# Set the transition_status variable to Transition.ZOOM_OUT even if the animation itself has not yet started.
@@ -170,12 +177,16 @@ func request_pause_menu(intro : bool):
 	
 	# If the screen is configured to be the start menu, keep the screen in its initial state (black)
 	# and set screen_status to Screen.FADE_OUT, as if the animation was already done.
-	if (intro == true):
-		screen_status = Screen.FADE_OUT
-		menu_label.set_text("Codename flippyflippy\nPress ESC to start")
-	else:
-		fade_out()
-		menu_label.set_text("Game paused\nPress ESC to resume")
+	match message:
+		Message.INTRO:
+			screen_status = Screen.FADE_OUT
+			menu_label.set_text("Codename flippyflippy\nPress ESC to start")
+		Message.PAUSE:
+			fade_out()
+			menu_label.set_text("Game paused\nPress ESC to resume")
+		Message.RESTART:
+			fade_out()
+			menu_label.set_text("You died\nPress ESC to restart")
 	
 	print("step one of pause")
 
@@ -183,6 +194,9 @@ func request_resume():
 	zoom_in()
 	menu_label.set_visible(false)
 	print("step one of resume")
+
+func request_death_screen():
+	pass
 
 func disable_platform_physics(level_platform_state : bool, transition_platform_state : bool):
 	get_node(current_level_path + main_base_platform_collision_shape).set_deferred("disabled", level_platform_state)
@@ -203,3 +217,14 @@ func _process(delta):
 	
 	check_rotation_status()
 	check_menu_transition_status()
+
+func _on_player_died():
+	print("reset_requested")
+	print(screen_status)
+	print(transition_status)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	player.reset_player_movement()
+	player.set_movement_paused(true)
+	request_pause_menu(Message.RESTART)
+	game_over = true
+	paused = true

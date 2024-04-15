@@ -105,7 +105,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 [node name="PlayerTracker" type="Node3D" parent="."]
 
 [node name="MainCameraMarker" type="Marker3D" parent="PlayerTracker"]
-transform = Transform3D(0.808469, 0, 0.588539, 0, 1, 0, -0.588539, 0, 0.808469, 6.00889, 2.00296, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="PlayerTracker/MainCameraMarker"]
 libraries = {
@@ -135,6 +135,7 @@ libraries = {
 }
 
 [node name="MenuLabel" type="Label" parent="MenuElements"]
+layout_mode = 0
 offset_right = 157.0
 offset_bottom = 49.0
 text = "Game paused

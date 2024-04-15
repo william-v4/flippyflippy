@@ -66,6 +66,7 @@ return={
 3d_physics/layer_3="spacetime"
 3d_physics/layer_4="harmful_objects"
 3d_physics/layer_5="portal"
+3d_physics/layer_6="fall_detect"
 
 [rendering]
 

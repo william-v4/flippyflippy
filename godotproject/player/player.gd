@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+signal player_died
+
 # Variable for normal acceleration applied by the player
 @export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 200, "z" = 20}
 #Variable for added acceleration alongside normal acceleration (for larger jumps, quicker changes in direction, and so on)
@@ -28,6 +30,8 @@ var camera_marker : Object
 var camera : Object
 var main : Object
 
+var fall_detector : String = "FallDetector"
+
 const input_negative_value : Dictionary = {"x" = "move_left", "y" = 0, "z" = "move_forward"}
 const input_positive_value : Dictionary = {"x" = "move_right", "y" = 0, "z" = "move_back"}
 
@@ -42,8 +46,6 @@ func _ready():
 	camera_marker = get_node("PlayerCameraMarker")
 	camera = get_node("PlayerCameraMarker/Camera3D")
 	main = get_parent()
-	
-	main.hit_spike.connect(_on_main_hit_spike)
 	
 	get_node('PlayerMesh').set_visible(true)
 	
@@ -155,6 +157,13 @@ func check_looking_up():
 	if (camera_marker.rotation_degrees.x >= 60):
 		lookingup = true
 
+func reset_position():
+	position = Vector3(0, 1, 0)
+
+func reset_rotation():
+	rotation = Vector3(0, 0, 0)
+	camera_marker.set_rotation(Vector3(0, 0, 0))
+
 # runs whenever input is received
 func _input(event):
 	# camera movement with mouse
@@ -179,7 +188,9 @@ func _physics_process(delta):
 		velocity.z = (cos(rotation.y) * target_velocity["z"]) + (-(sin(rotation.y) * target_velocity["x"]))
 		
 		move_and_slide()
+		#print(str(get_slide_collision_count()))
 		check_looking_up()
 
-func _on_main_hit_spike():
-	pass
+func _on_object_detector_area_entered(area):
+	if (area.name == fall_detector):
+		player_died.emit()
