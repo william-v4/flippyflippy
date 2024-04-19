@@ -51,6 +51,7 @@ func _ready():
 	
 	disable_platform_physics(false, true)
 	request_pause_menu(Message.INTRO)
+	$MainWorldEnvironment/AnimationPlayer.play("darken")
 
 func get_node_names():
 	player = get_node("Player")
@@ -163,6 +164,7 @@ func switch_menu_if_requested():
 		player.reset_player_movement()
 		player.set_movement_paused(true)
 		request_pause_menu(Message.PAUSE)
+		$MainWorldEnvironment/AnimationPlayer.play("darken")
 		paused = true
 	elif (Input.is_action_just_pressed("return") and paused and transition_status == Transition.NONE and screen_status == Screen.STANDARD):
 		print("resume requested")
@@ -180,17 +182,22 @@ func request_pause_menu(message : int):
 	match message:
 		Message.INTRO:
 			screen_status = Screen.FADE_OUT
-			menu_label.set_text("Codename flippyflippy\nPress ESC to start")
+			# menu_label.set_text("Codename flippyflippy\nPress ESC to start")
+			menu_label.visible = false
 		Message.PAUSE:
 			fade_out()
+			menu_label.visible = true
 			menu_label.set_text("Game paused\nPress ESC to resume")
 		Message.RESTART:
+			menu_label.visible = true
 			fade_out()
 			menu_label.set_text("You died\nPress ESC to restart")
 	
 	print("step one of pause")
 
 func request_resume():
+	$MenuElements/startscreen.visible = false
+	$MainWorldEnvironment/AnimationPlayer.play("lighten")
 	zoom_in()
 	menu_label.set_visible(false)
 	print("step one of resume")
@@ -225,6 +232,7 @@ func _on_player_died():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	player.reset_player_movement()
 	player.set_movement_paused(true)
+	$MainWorldEnvironment/AnimationPlayer.play("darken")
 	request_pause_menu(Message.RESTART)
 	game_over = true
 	paused = true

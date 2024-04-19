@@ -1,25 +1,89 @@
-[gd_scene load_steps=12 format=3 uid="uid://crjfekrbdt25r"]
+[gd_scene load_steps=21 format=3 uid="uid://crjfekrbdt25r"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_7b45r"]
 [ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://player/player.tscn" id="2_iyr3n"]
 [ext_resource type="PackedScene" uid="uid://cekeiamqjcni0" path="res://resources/levels/tutorial_level/tutorial_level.tscn" id="4_7sl73"]
+[ext_resource type="Texture2D" uid="uid://b7jilkxtynw17" path="res://resources/banner.png" id="4_agvd7"]
+[ext_resource type="FontFile" uid="uid://d14q7u8yny5n0" path="res://resources/fonts/Lato-Bold.ttf" id="5_a2ihg"]
+[ext_resource type="AudioStream" uid="uid://dvr6y4u25upp3" path="res://resources/audio/intro.ogg" id="6_7il4k"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o4if0"]
-sky_top_color = Color(0.152941, 0, 0.588235, 1)
-sky_horizon_color = Color(0, 0.768627, 0.588235, 1)
-ground_bottom_color = Color(0, 0, 0, 1)
-ground_horizon_color = Color(0.505882, 0.00392157, 0.741176, 1)
-sun_curve = 1e-05
+[sub_resource type="Gradient" id="Gradient_heoo6"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.528302, 1)
+colors = PackedColorArray(0.382978, 0.00179239, 0.684946, 1, 0.108654, 0.444525, 0.351746, 1, 0.382978, 0.00179239, 0.684946, 1)
 
-[sub_resource type="Sky" id="Sky_71glp"]
-sky_material = SubResource("ProceduralSkyMaterial_o4if0")
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_r5wch"]
+gradient = SubResource("Gradient_heoo6")
 
-[sub_resource type="Environment" id="Environment_qurug"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ph4kq"]
+sky_top_color = Color(0.384314, 0.454902, 0.54902, 1)
+sky_horizon_color = Color(0.243137, 0.713726, 0.886275, 1)
+sky_cover = SubResource("GradientTexture2D_r5wch")
+ground_bottom_color = Color(0.105882, 0.184314, 0.247059, 1)
+ground_horizon_color = Color(0.294118, 0.682353, 1, 1)
+sun_curve = 0.00020716
+
+[sub_resource type="Sky" id="Sky_gkq4i"]
+sky_material = SubResource("ProceduralSkyMaterial_ph4kq")
+
+[sub_resource type="Environment" id="Environment_210g0"]
 background_mode = 2
-sky = SubResource("Sky_71glp")
+sky = SubResource("Sky_gkq4i")
 ambient_light_source = 3
 fog_enabled = true
-fog_light_color = Color(0.105882, 0.862745, 0.866667, 1)
+fog_light_color = Color(0.0637816, 0.596842, 0.808553, 1)
+
+[sub_resource type="Animation" id="Animation_0rjx8"]
+resource_name = "darken"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:environment:background_energy_multiplier")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.5]
+}
+
+[sub_resource type="Animation" id="Animation_4j3if"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:environment:background_energy_multiplier")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+
+[sub_resource type="Animation" id="Animation_so2il"]
+resource_name = "lighten"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:environment:background_energy_multiplier")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.5, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_06cvr"]
+_data = {
+"RESET": SubResource("Animation_4j3if"),
+"darken": SubResource("Animation_0rjx8"),
+"lighten": SubResource("Animation_so2il")
+}
 
 [sub_resource type="Animation" id="Animation_vwiu0"]
 resource_name = "move_marker_to_menu"
@@ -93,7 +157,12 @@ _data = {
 script = ExtResource("1_7b45r")
 
 [node name="MainWorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_qurug")
+environment = SubResource("Environment_210g0")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="MainWorldEnvironment"]
+libraries = {
+"": SubResource("AnimationLibrary_06cvr")
+}
 
 [node name="Levels" type="Node3D" parent="."]
 
@@ -105,7 +174,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 [node name="PlayerTracker" type="Node3D" parent="."]
 
 [node name="MainCameraMarker" type="Marker3D" parent="PlayerTracker"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="PlayerTracker/MainCameraMarker"]
 libraries = {
@@ -127,7 +195,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 1)
+color = Color(0, 0, 0, 0)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="MenuElements/BlackScreen"]
 libraries = {
@@ -135,8 +203,39 @@ libraries = {
 }
 
 [node name="MenuLabel" type="Label" parent="MenuElements"]
+visible = false
 layout_mode = 0
 offset_right = 157.0
 offset_bottom = 49.0
-text = "Game paused
-Press ESC to resume"
+
+[node name="startscreen" type="Control" parent="MenuElements"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Banner" type="Sprite2D" parent="MenuElements/startscreen"]
+position = Vector2(576, 224)
+scale = Vector2(0.362565, 0.362565)
+texture = ExtResource("4_agvd7")
+
+[node name="Label" type="Label" parent="MenuElements/startscreen"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = 12.0
+offset_bottom = 56.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("5_a2ihg")
+theme_override_font_sizes/font_size = 36
+text = "Let's go: ESC"
+horizontal_alignment = 1
+
+[node name="jukebox" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_7il4k")
+autoplay = true
