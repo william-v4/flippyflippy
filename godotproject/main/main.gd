@@ -8,11 +8,11 @@ var main_camera_marker : Object
 var main_camera_marker_animation_player : Object
 var platform_animation_player : Object
 var black_screen_animation_player : Object
-
+var firstjump : bool = true
 var menu_elements : Object
 var black_screen : Object
 var menu_label : Object
-
+var levelrotators : Array
 var paused : bool = true
 var game_over : bool = false
 
@@ -52,6 +52,7 @@ func _ready():
 	disable_platform_physics(false, true)
 	request_pause_menu(Message.INTRO)
 	$MainWorldEnvironment/AnimationPlayer.play("darken")
+	$Levels/TutorialLevel.parallelhidden = true
 
 func get_node_names():
 	player = get_node("Player")
@@ -62,10 +63,14 @@ func get_node_names():
 	main_camera_marker_animation_player = get_node("PlayerTracker/MainCameraMarker/AnimationPlayer")
 	platform_animation_player = get_node("Levels/TutorialLevel/AnimationPlayer")
 	black_screen_animation_player = get_node("MenuElements/BlackScreen/AnimationPlayer")
-	
 	menu_elements = get_node("MenuElements")
 	black_screen = get_node("MenuElements/BlackScreen")
 	menu_label = get_node("MenuElements/MenuLabel")
+	levelrotators = [
+		$Levels/TutorialLevel/AnimationPlayer,
+		$Levels/level1/AnimationPlayer,
+		$Levels/level2/AnimationPlayer
+	]
 
 func fade_out():
 	black_screen_animation_player.play("fade_out")
@@ -147,18 +152,33 @@ func check_menu_transition_status():
 func rotate_if_requested():
 	if (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.MAIN) and !rotating and !player.movement_paused):
 		disable_platform_physics(true, false)
-		platform_animation_player.play("rotatetoparallel")
+		# platform_animation_player.play("rotatetoparallel")
+		for a in levelrotators:
+			print(a)
+			a.play("rotatetoparallel")
 		rotating = true
 		current_platform = Platform.PARALLEL
+		if firstjump:
+			$Levels/TutorialLevel.parallelhidden = false
+			# Engine.time_scale = 0.02
+			$MainWorldEnvironment/AnimationPlayer.play("firstjumpfade")
 	elif (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.PARALLEL) and !rotating and !player.movement_paused): 
 		disable_platform_physics(true, false)
-		platform_animation_player.play_backwards("rotatetoparallel")
+		# platform_animation_player.play_backwards("rotatetoparallel")
+		for a in levelrotators:
+			a.play_backwards("rotatetoparallel")
 		rotating = true
 		current_platform = Platform.MAIN
 
+func firstrotation():
+	if rotating:
+		if !$Levels/TutorialLevel/AnimationPlayer.is_playing():
+			firstjump = false
+			Engine.time_scale = 1
+
 # pausing the game and capturing/releasing the cursor
 func switch_menu_if_requested():
-	if (Input.is_action_just_pressed("return") and !paused and transition_status == Transition.NONE and screen_status == Screen.STANDARD):
+	if (Input.is_action_just_pressed("return") and !paused and !rotating and transition_status == Transition.NONE and screen_status == Screen.STANDARD):
 		print("pause requested")
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		player.reset_player_movement()
@@ -218,12 +238,21 @@ func connect_to_new_parent(object_to_reparent : Object, old_parent : Object, new
 	old_parent.remove_child(object_to_reparent)
 	new_parent.add_child(object_to_reparent)
 
+func setportalcams():
+	$Levels/TutorialLevel/end/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/TutorialLevel.nextlevel) + "/frontview")
+	$Levels/level1/start/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level1.previouslevel) + "/backview")
+	$Levels/level1/end/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level1.nextlevel) + "/frontview")
+	$Levels/level2/start/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level2.previouslevel) + "/backview")
+	# $Levels/level2/end/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level2.nextlevel) + "/frontview")
+
 func _process(delta):
+	if firstjump:
+		firstrotation()
 	rotate_if_requested()
 	switch_menu_if_requested()
-	
 	check_rotation_status()
 	check_menu_transition_status()
+	setportalcams()
 
 func _on_player_died():
 	print("reset_requested")

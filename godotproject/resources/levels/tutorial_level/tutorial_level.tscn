@@ -1,13 +1,47 @@
-[gd_scene load_steps=8 format=3 uid="uid://cekeiamqjcni0"]
+[gd_scene load_steps=14 format=3 uid="uid://cekeiamqjcni0"]
 
 [ext_resource type="PackedScene" uid="uid://1whi2wpesb8i" path="res://resources/levels/tutorial_level/platforms/tutorial_level_main.tscn" id="1_cvn1k"]
 [ext_resource type="PackedScene" uid="uid://ctclmqtwmqt3c" path="res://resources/levels/tutorial_level/platforms/tutorial_level_parallel.tscn" id="2_xbmp1"]
+
+[sub_resource type="GDScript" id="GDScript_484r3"]
+script/source = "extends Node3D
+@export var parallelhidden : bool
+@export var nextlevel : NodePath
+func _process(delta):
+	if parallelhidden: 
+		$LevelComponents/ParallelPlatform.visible = false
+	else: 
+		$LevelComponents/ParallelPlatform.visible = true
+"
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nem2g"]
 size = Vector3(10, 1, 45)
 
 [sub_resource type="Animation" id="Animation_y6xo5"]
 length = 0.001
+
+[sub_resource type="Animation" id="Animation_q7lwp"]
+resource_name = "firstrotation"
+length = 2.0
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LevelComponents")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 2, 1, 0, 10, 0)
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("LevelComponents:rotation")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, -3.14159)]
+}
 
 [sub_resource type="Animation" id="Animation_cs7mw"]
 resource_name = "rotatetoparallel"
@@ -35,15 +69,34 @@ tracks/1/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_hg7b7"]
 _data = {
 "RESET": SubResource("Animation_y6xo5"),
+"firstrotation": SubResource("Animation_q7lwp"),
 "rotatetoparallel": SubResource("Animation_cs7mw")
 }
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bfe5m"]
 size = Vector3(100, 1, 45)
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_b03x7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_udht0"]
+resource_local_to_scene = true
+albedo_texture = SubResource("ViewportTexture_b03x7")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_uaeis"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_udht0")
+top_radius = 2.0
+bottom_radius = 2.0
+height = 0.1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_kt8oy"]
+radius = 2.0
+
 [node name="TutorialLevel" type="Node3D"]
+script = SubResource("GDScript_484r3")
 
 [node name="LevelComponents" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="MainPlatform" parent="LevelComponents" instance=ExtResource("1_cvn1k")]
 
@@ -71,3 +124,21 @@ collision_layer = 32
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FallDetector"]
 shape = SubResource("BoxShape3D_bfe5m")
+
+[node name="end" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -35)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="end"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -3)
+mesh = SubResource("CylinderMesh_uaeis")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="end"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -3)
+shape = SubResource("CylinderShape3D_kt8oy")
+
+[node name="backview" type="SubViewport" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="backview"]
+transform = Transform3D(-1, -1.52855e-14, -8.74228e-08, 0, 1, -1.74846e-07, 8.74228e-08, -1.74846e-07, -1, 0, 2, -38)
+fov = 90.0

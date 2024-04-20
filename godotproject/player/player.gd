@@ -192,5 +192,12 @@ func _physics_process(delta):
 		check_looking_up()
 
 func _on_object_detector_area_entered(area):
+	var nodenameunwantedchars = [".","/"]
+	var levelstring
+	print(area)
 	if (area.name == fall_detector):
 		player_died.emit()
+	if "start" in area.name:
+		global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().previouslevel).replace("../", "")).get_node("end").global_position
+	if "end" in area.name:
+		global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel).replace("../", "")).get_node("start").global_position
