@@ -218,12 +218,7 @@ func _physics_process(delta):
 		velocity.z = (cos(rotation.y) * target_velocity["z"]) + (-(sin(rotation.y) * target_velocity["x"]))
 		
 		move_and_slide()
-		#print(str(get_slide_collision_count()))
 		check_looking_up()
-		
-		#print(str(is_on_floor()))
-		
-		#print(str(get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel))))
 
 func _on_object_detector_area_entered(area):
 	var nodenameunwantedchars = [".","/"]
@@ -233,10 +228,8 @@ func _on_object_detector_area_entered(area):
 		player_died.emit()
 	if "start" in area.name:
 		move_back_level.emit(true, get_node(str(area.get_parent().previouslevel).replace("../", "../Levels/")))
-		#global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().previouslevel).replace("../", "")).get_node("end").global_position
 	if "end" in area.name:
 		move_forward_level.emit(true, get_node(str(area.get_parent().nextlevel).replace("../", "../Levels/")))
-		#global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel).replace("../", "")).get_node("start").global_position
 
 func _on_object_detector_body_entered(body):
 	if "jumppad" in body.name:
