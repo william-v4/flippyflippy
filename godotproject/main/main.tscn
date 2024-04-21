@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://crjfekrbdt25r"]
+[gd_scene load_steps=25 format=3 uid="uid://crjfekrbdt25r"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_7b45r"]
 [ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://player/player.tscn" id="2_iyr3n"]
@@ -196,6 +196,9 @@ _data = {
 "fade_out_slow": SubResource("Animation_giyit")
 }
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_uic4c"]
+size = Vector3(256, 1, 256)
+
 [node name="Main" type="Node"]
 script = ExtResource("1_7b45r")
 
@@ -292,3 +295,9 @@ horizontal_alignment = 1
 [node name="jukebox" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_7il4k")
 autoplay = true
+
+[node name="FallDetector" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FallDetector"]
+shape = SubResource("BoxShape3D_uic4c")

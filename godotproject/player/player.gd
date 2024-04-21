@@ -174,6 +174,8 @@ func _input(event):
 		camera_marker.rotate_x(-deg_to_rad(event.relative.y) * mousesensy)
 		# make sure player doesn't break their neck (rotating over 90 degrees)
 		camera_marker.rotation_degrees.x = clamp(camera_marker.rotation_degrees.x, -90, 90)
+	if Input.is_action_just_pressed("action_key_a"):
+		position.y += 5
 
 # runs continuously
 func _physics_process(delta):	

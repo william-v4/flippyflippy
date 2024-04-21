@@ -240,7 +240,10 @@ func connect_to_new_parent(object_to_reparent : Object, old_parent : Object, new
 
 func setportalcams():
 	$Levels/TutorialLevel/end/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/TutorialLevel.nextlevel) + "/frontview")
+	print($Levels/TutorialLevel/end/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path)
+	# print(NodePath(str($Levels/TutorialLevel.nextlevel) + "/frontview"))
 	$Levels/level1/start/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level1.previouslevel) + "/backview")
+	# print(NodePath(str($Levels/level1.nextlevel) + "/frontview"))
 	$Levels/level1/end/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level1.nextlevel) + "/frontview")
 	$Levels/level2/start/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level2.previouslevel) + "/backview")
 	# $Levels/level2/end/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level2.nextlevel) + "/frontview")
