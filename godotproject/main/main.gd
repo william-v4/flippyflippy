@@ -1,5 +1,8 @@
 extends Node
 
+signal platform_transition_started
+signal platform_transition_stopped
+
 var player : Object
 var player_camera_marker : Object
 var camera : Object
@@ -99,6 +102,7 @@ func zoom_in():
 func check_rotation_status():
 	if (!platform_animation_player.is_playing()): 
 		rotating = false
+		platform_transition_stopped.emit()
 		if (get_node(current_level_path + main_base_platform_collision_shape).is_disabled()):
 			disable_platform_physics(false, true)
 
@@ -168,6 +172,11 @@ func check_menu_transition_status():
 func rotate_if_requested():
 	if (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.MAIN) and !rotating and !player.movement_paused):
 		disable_platform_physics(true, false)
+		# This sets the player's y acceleration to 300 for one frame, similar to how a jump
+		#	is usually started in the player script. This is subject to change.
+		#print(str(player.get_target_acceleration()))
+		#player.set_target_acceleration((player.get_target_acceleration()["x"]), (5000), (player.get_target_acceleration()["z"]))
+		platform_transition_started.emit()
 		# platform_animation_player.play("rotatetoparallel")
 		for a in levelrotators:
 			print(a)
@@ -180,6 +189,7 @@ func rotate_if_requested():
 			$MainWorldEnvironment/AnimationPlayer.play("firstjumpfade")
 	elif (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.PARALLEL) and !rotating and !player.movement_paused): 
 		disable_platform_physics(true, false)
+		platform_transition_started.emit()
 		# platform_animation_player.play_backwards("rotatetoparallel")
 		for a in levelrotators:
 			a.play_backwards("rotatetoparallel")
@@ -245,6 +255,8 @@ func request_resume():
 func request_death_screen():
 	pass
 
+# This only affects the tutorial level because of the way it was written,
+#	though this whole function may be removed.
 func disable_platform_physics(level_platform_state : bool, transition_platform_state : bool):
 	get_node(current_level_path + main_base_platform_collision_shape).set_deferred("disabled", level_platform_state)
 	get_node(current_level_path + main_spikes_collision_shape).set_deferred("disabled", level_platform_state)
