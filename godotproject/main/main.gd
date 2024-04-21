@@ -170,8 +170,7 @@ func check_menu_transition_status():
 		transition_status = Transition.NONE
 
 func rotate_if_requested():
-	print(str(player.is_on_floor()))
-	if (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.MAIN) and !rotating and !player.movement_paused and player.is_on_floor()):
+	if (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.MAIN) and !rotating and !player.movement_paused):
 		disable_platform_physics(true, false)
 		# This sets the player's y acceleration to 300 for one frame, similar to how a jump
 		#	is usually started in the player script. This is subject to change.
