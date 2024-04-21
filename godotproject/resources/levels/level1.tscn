@@ -336,14 +336,6 @@ mesh = SubResource("BoxMesh_k4u4h")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -9, 3)
 shape = SubResource("ConcavePolygonShape3D_fp705")
 
-[node name="parallelcube4" type="MeshInstance3D" parent="split2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 9, 3)
-mesh = SubResource("BoxMesh_k4u4h")
-
-[node name="parallelcube4collisionshape4" type="CollisionShape3D" parent="split2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 9, 3)
-shape = SubResource("ConcavePolygonShape3D_fp705")
-
 [node name="parallelcube2" type="MeshInstance3D" parent="split2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 7, 0)
 mesh = SubResource("BoxMesh_k4u4h")
