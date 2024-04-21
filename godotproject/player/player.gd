@@ -175,7 +175,7 @@ func _input(event):
 		# make sure player doesn't break their neck (rotating over 90 degrees)
 		camera_marker.rotation_degrees.x = clamp(camera_marker.rotation_degrees.x, -90, 90)
 	if Input.is_action_just_pressed("action_key_a"):
-		position.y += 5
+		position.y += 2
 
 # runs continuously
 func _physics_process(delta):	
@@ -203,3 +203,8 @@ func _on_object_detector_area_entered(area):
 		global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().previouslevel).replace("../", "")).get_node("end").global_position
 	if "end" in area.name:
 		global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel).replace("../", "")).get_node("start").global_position
+
+
+func _on_object_detector_body_entered(body):
+	if "jumppad" in body.name:
+		target_velocity["y"] += 15

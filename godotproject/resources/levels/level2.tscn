@@ -890,13 +890,14 @@ shape = SubResource("ConcavePolygonShape3D_ljtkf")
 mesh = SubResource("ArrayMesh_aeac0")
 skeleton = NodePath("")
 
-[node name="currentjumppad1" type="MeshInstance3D" parent="split1/current1"]
+[node name="currentjumppad1" type="StaticBody3D" parent="split1/current1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.4444, -2.22222, 0.444445)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="split1/current1/currentjumppad1"]
 mesh = SubResource("ArrayMesh_3do4k")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="split1/current1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.4444, -2.22222, 0.444445)
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="split1/current1/currentjumppad1"]
 shape = SubResource("ConcavePolygonShape3D_su04m")
 
 [node name="parallel1" type="StaticBody3D" parent="split1"]
@@ -913,13 +914,14 @@ skeleton = NodePath("")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.4444, 20.2222, -0.444448)
 shape = SubResource("ConcavePolygonShape3D_04pyw")
 
-[node name="paralleljumppad1mesh" type="MeshInstance3D" parent="split1/parallel1"]
+[node name="paralleljumppad2" type="StaticBody3D" parent="split1/parallel1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 23, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="split1/parallel1/paralleljumppad2"]
 mesh = SubResource("ArrayMesh_jp14y")
 skeleton = NodePath("")
 
-[node name="paralleljumppad1" type="CollisionShape3D" parent="split1/parallel1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 23, 0)
+[node name="paralleljumppad1" type="CollisionShape3D" parent="split1/parallel1/paralleljumppad2"]
 shape = SubResource("ConcavePolygonShape3D_ax5yl")
 
 [node name="currentmovecube1" type="StaticBody3D" parent="split1"]
