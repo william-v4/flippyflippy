@@ -1,6 +1,8 @@
 extends CharacterBody3D
 
 signal player_died
+signal move_back_level(pause_requested : bool, new_level : NodePath)
+signal move_forward_level(pause_requested : bool, new_level : NodePath)
 
 # Variable for normal acceleration applied by the player
 @export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 200, "z" = 20}
@@ -157,7 +159,7 @@ func check_looking_up():
 	if (camera_marker.rotation_degrees.x >= 60):
 		lookingup = true
 
-func reset_position():
+func reset_position_to_start():
 	position = Vector3(0, 1, 0)
 
 func reset_rotation():
@@ -172,7 +174,7 @@ func _input(event):
 		rotate_y(-deg_to_rad(event.relative.x) * mousesensx)
 		# rotate camera up and down
 		camera_marker.rotate_x(-deg_to_rad(event.relative.y) * mousesensy)
-		# make sure player doesn't break their neck (rotating over 90 degrees)
+		# make sure player doesn't rotate over 90 degrees
 		camera_marker.rotation_degrees.x = clamp(camera_marker.rotation_degrees.x, -90, 90)
 
 # runs continuously
@@ -190,6 +192,8 @@ func _physics_process(delta):
 		move_and_slide()
 		#print(str(get_slide_collision_count()))
 		check_looking_up()
+		
+		#print(str(get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel))))
 
 func _on_object_detector_area_entered(area):
 	var nodenameunwantedchars = [".","/"]
@@ -198,9 +202,11 @@ func _on_object_detector_area_entered(area):
 	if (area.name == fall_detector):
 		player_died.emit()
 	if "start" in area.name:
-		global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().previouslevel).replace("../", "")).get_node("end").global_position
+		move_back_level.emit(true, get_node(str(area.get_parent().previouslevel).replace("../", "../Levels/")))
+		#global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().previouslevel).replace("../", "")).get_node("end").global_position
 	if "end" in area.name:
-		global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel).replace("../", "")).get_node("start").global_position
+		move_forward_level.emit(true, get_node(str(area.get_parent().nextlevel).replace("../", "../Levels/")))
+		#global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel).replace("../", "")).get_node("start").global_position
 
 
 func _on_object_detector_body_entered(body):

@@ -289,7 +289,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("5_a2ihg")
 theme_override_font_sizes/font_size = 36
-text = "Let's go: ESC"
+text = "Press ESC to start"
 horizontal_alignment = 1
 
 [node name="jukebox" type="AudioStreamPlayer" parent="."]

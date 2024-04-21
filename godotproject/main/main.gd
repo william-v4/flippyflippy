@@ -14,9 +14,11 @@ var black_screen : Object
 var menu_label : Object
 var levelrotators : Array
 var paused : bool = true
-var game_over : bool = false
+var reset_level : int
 
+# This is to be replaced with current_level
 var current_level_path : String = "Levels/TutorialLevel/"
+var current_level : Object
 # current platform of the level (see Platform enum for values)
 var current_platform : int
 
@@ -26,9 +28,10 @@ var transition_status : int
 var screen_status : int
 
 enum Platform {MAIN, PARALLEL}
+enum ResetPoint {NONE, START, END}
 enum Transition {NONE, ZOOM_OUT, ZOOM_IN}
 enum Screen {STANDARD, FADE_OUT, FADE_IN}
-enum Message {INTRO, PAUSE, RESTART}
+enum Message {INTRO, PAUSE, RESTART, SWITCHED_LEVELS}
 
 const main_base_platform_collision_shape : String = "LevelComponents/MainPlatform/BasePlatform/PlatformCollisionShape"
 const main_spikes_collision_shape : String = "LevelComponents/MainPlatform/HarmfulObjects/Spikes/SpikesCollisionShape"
@@ -43,9 +46,12 @@ func _ready():
 	
 	player.set_movement_paused(true)
 	player.player_died.connect(_on_player_died)
+	player.move_back_level.connect(_on_player_move_back_level)
+	player.move_forward_level.connect(_on_player_move_forward_level)
 	
 	screen_status = Screen.STANDARD
 	transition_status = Transition.NONE
+	reset_level = ResetPoint.NONE
 	
 	menu_label.set_visible(false)
 	
@@ -56,6 +62,7 @@ func _ready():
 
 func get_node_names():
 	player = get_node("Player")
+	current_level = get_node("Levels/TutorialLevel")
 	player_camera_marker = get_node("Player/PlayerCameraMarker")
 	camera = get_node("Player/PlayerCameraMarker/Camera3D")
 	player_tracker = get_node("PlayerTracker")
@@ -104,10 +111,19 @@ func check_menu_transition_status():
 		connect_to_new_parent(camera, player_camera_marker, player_tracker)
 		connect_to_new_parent(camera, player_tracker, main_camera_marker)
 		
-		if (game_over):
-			player.reset_position()
+		if (reset_level == ResetPoint.START):
+			player.set_position(current_level.get_position() + current_level.get_node("start").get_position())
+			print("reset to start, player is now at: " + str(player.get_position()))
 			player.reset_rotation()
-			player_tracker.set_position(Vector3((player.get_position().x), 1.5, (player.get_position().z)))
+			player_tracker.set_position(Vector3((player.get_position().x), (player.get_position().y), (player.get_position().z)))
+			
+			reset_level = ResetPoint.NONE
+		elif (reset_level == ResetPoint.END):
+			player.set_position(current_level.get_position() + current_level.get_node("end").get_position())
+			player.reset_rotation()
+			player_tracker.set_position(Vector3((player.get_position().x), (player.get_position().y), (player.get_position().z)))
+			
+			reset_level = ResetPoint.NONE
 		
 		zoom_out()
 		
@@ -193,7 +209,7 @@ func switch_menu_if_requested():
 
 func request_pause_menu(message : int):
 	# Get x and z value of player to be used during transition
-	player_tracker.set_position(Vector3((player.get_position().x), 1.5, (player.get_position().z)))
+	player_tracker.set_position(Vector3((player.get_position().x), (player.get_position().y), (player.get_position().z)))
 	# Set the transition_status variable to Transition.ZOOM_OUT even if the animation itself has not yet started.
 	transition_status = Transition.ZOOM_OUT
 	
@@ -212,6 +228,10 @@ func request_pause_menu(message : int):
 			menu_label.visible = true
 			fade_out()
 			menu_label.set_text("You died\nPress ESC to restart")
+		Message.SWITCHED_LEVELS:
+			menu_label.visible = true
+			fade_out()
+			menu_label.set_text("You switched levels\nPress ESC to continue")
 	
 	print("step one of pause")
 
@@ -266,5 +286,49 @@ func _on_player_died():
 	player.set_movement_paused(true)
 	$MainWorldEnvironment/AnimationPlayer.play("darken")
 	request_pause_menu(Message.RESTART)
-	game_over = true
+	reset_level = ResetPoint.START
 	paused = true
+
+func _on_player_move_back_level(pause_requested, new_level):
+	print("level back requested")
+	player.reset_player_movement()
+	player.set_movement_paused(true)
+	current_level = new_level
+	print(str(new_level))
+	reset_level = ResetPoint.END
+	
+	if (pause_requested):
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		$MainWorldEnvironment/AnimationPlayer.play("darken")
+		request_pause_menu(Message.SWITCHED_LEVELS)
+		paused = true
+	else:
+		player.set_position(current_level.get_position() + current_level.get_node("end").get_position())
+		player.reset_rotation()
+		player_tracker.set_position(Vector3((player.get_position().x), (player.get_position().y), (player.get_position().z)))
+		
+		reset_level = ResetPoint.NONE
+		
+		player.set_movement_paused(false)
+
+func _on_player_move_forward_level(pause_requested, new_level):
+	print("level forward requested")
+	player.reset_player_movement()
+	player.set_movement_paused(true)
+	current_level = new_level
+	print(str(new_level))
+	reset_level = ResetPoint.START
+	
+	if (pause_requested):
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		$MainWorldEnvironment/AnimationPlayer.play("darken")
+		request_pause_menu(Message.SWITCHED_LEVELS)
+		paused = true
+	else:
+		player.set_position(current_level.get_position() + current_level.get_node("start").get_position())
+		player.reset_rotation()
+		player_tracker.set_position(Vector3((player.get_position().x), (player.get_position().y), (player.get_position().z)))
+		
+		reset_level = ResetPoint.NONE
+		
+		player.set_movement_paused(false)
