@@ -100,7 +100,7 @@ func zoom_in():
 
 # tell the level it is moving
 func check_rotation_status():
-	if (!platform_animation_player.is_playing()): 
+	if (!platform_animation_player.is_playing() and rotating == true): 
 		rotating = false
 		platform_transition_stopped.emit()
 		if (get_node(current_level_path + main_base_platform_collision_shape).is_disabled()):
@@ -170,7 +170,8 @@ func check_menu_transition_status():
 		transition_status = Transition.NONE
 
 func rotate_if_requested():
-	if (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.MAIN) and !rotating and !player.movement_paused):
+	print(str(player.is_on_floor()))
+	if (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.MAIN) and !rotating and !player.movement_paused and player.is_on_floor()):
 		disable_platform_physics(true, false)
 		# This sets the player's y acceleration to 300 for one frame, similar to how a jump
 		#	is usually started in the player script. This is subject to change.
@@ -187,7 +188,7 @@ func rotate_if_requested():
 			$Levels/TutorialLevel.parallelhidden = false
 			# Engine.time_scale = 0.02
 			$MainWorldEnvironment/AnimationPlayer.play("firstjumpfade")
-	elif (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.PARALLEL) and !rotating and !player.movement_paused): 
+	elif (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.PARALLEL) and !rotating and !player.movement_paused and player.is_on_floor()): 
 		disable_platform_physics(true, false)
 		platform_transition_started.emit()
 		# platform_animation_player.play_backwards("rotatetoparallel")

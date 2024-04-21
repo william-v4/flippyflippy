@@ -171,7 +171,8 @@ func calculate_y_velocity(delta : float):
 		if (Input.is_action_pressed("jump") and !is_on_floor() and !get_parent().rotating and (target_velocity["y"] > 0) and (previous_target_acceleration > -(gravity_acceleration_scalar))):
 			target_acceleration["y"] = (-(gravity_acceleration_scalar)) + lower_gravity_scalar
 	elif (jump_status == JumpStates.JUST_OVERRIDDEN):
-		target_acceleration["y"] = applied_normal_acceleration_scalar["y"]
+		if (is_on_floor):
+			target_acceleration["y"] = applied_normal_acceleration_scalar["y"]
 		jump_status = JumpStates.OVERRIDDEN
 	elif (jump_status == JumpStates.OVERRIDDEN):
 		if ((Input.is_action_pressed("action_key_a")) and (target_velocity["y"] > 0) and (previous_target_acceleration > -(gravity_acceleration_scalar))):
@@ -220,7 +221,7 @@ func _physics_process(delta):
 		#print(str(get_slide_collision_count()))
 		check_looking_up()
 		
-		print(str(target_velocity["y"]))
+		#print(str(is_on_floor()))
 		
 		#print(str(get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel))))
 
@@ -246,3 +247,4 @@ func _on_platform_transition_started():
 
 func _on_platform_transition_stopped():
 	jump_status = JumpStates.NORMAL
+	target_acceleration["y"] = -(gravity_acceleration_scalar)
