@@ -22,6 +22,9 @@ signal move_forward_level(pause_requested : bool, new_level : NodePath)
 # if the player is looking above 60 degrees
 @export var lookingup : bool
 
+# Variable to change how the player jumps in-game (depending on whether a platform transition is happening)
+var jump_status : int
+
 # Variable for the player's "net" acceleration
 var target_acceleration : Dictionary = {"x" = 0, "y" = 0, "z" = 0}
 
@@ -37,6 +40,8 @@ var fall_detector : String = "FallDetector"
 const input_negative_value : Dictionary = {"x" = "move_left", "y" = 0, "z" = "move_forward"}
 const input_positive_value : Dictionary = {"x" = "move_right", "y" = 0, "z" = "move_back"}
 
+enum JumpStates {NORMAL, JUST_OVERRIDDEN, OVERRIDDEN}
+
 # if the game is paused or not
 var movement_paused : bool
 
@@ -49,8 +54,12 @@ func _ready():
 	camera = get_node("PlayerCameraMarker/Camera3D")
 	main = get_parent()
 	
+	main.platform_transition_started.connect(_on_platform_transition_started)
+	main.platform_transition_stopped.connect(_on_platform_transition_stopped)
+	
 	get_node('PlayerMesh').set_visible(true)
 	
+	jump_status = JumpStates.NORMAL
 	velocity = Vector3.ZERO
 
 func is_movement_paused():
@@ -62,6 +71,15 @@ func set_movement_paused(input_value : bool):
 func reset_player_movement():
 	target_acceleration = {"x" = 0, "y" = 0, "z" = 0}
 	target_velocity = {"x" = 0, "y" = 0, "z" = 0}
+
+func set_target_acceleration(new_x : int, new_y : int, new_z : int):
+	target_acceleration["x"] = new_x
+	target_acceleration["y"] = new_y
+	target_acceleration["z"] = new_z
+
+func get_target_acceleration():
+	var target_acceleration_to_return : Dictionary = {"x" = target_acceleration["x"], "y" = target_acceleration["y"], "z" = target_acceleration["z"]}
+	return target_acceleration_to_return
 
 func calculate_ground_velocity(delta : float):
 	# Determine the velocity of target_velocity on the x and z axis, respectively.
@@ -135,20 +153,30 @@ func lower_resultant_velocity(current_x_velocity : float, current_z_velocity : f
 	target_velocity["z"] = sin(atan2(current_z_velocity, current_x_velocity)) * max_velocity_scalar["z"]
 
 func calculate_y_velocity(delta : float):
+	var previous_target_acceleration : int = target_acceleration["y"]
+	
 	# If nothing else below this instruction changes the target acceleration along the y axis, the acceleration due to gravity will be the only acceleration along the y axis, bringing the player back to the ground.
 	target_acceleration["y"] = -(gravity_acceleration_scalar)
-
-	if (is_on_floor()):
-		target_acceleration["y"] = 0
-		target_velocity["y"] = 0
 	
-	# If the player is on the ground and presses the jump action key, begin a jump.
-	if (Input.is_action_pressed("jump") and is_on_floor() and !get_parent().rotating):
-		target_acceleration["y"] = applied_normal_acceleration_scalar["y"]
-	
-	# If the player continues to press the "jump" action after starting the jump from the floor, lower the (scalar) acceleration due to gravity to provide the player more time in the air.
-	if  (Input.is_action_pressed("jump") and is_on_floor() and !get_parent().rotating and (target_velocity["y"] > 0)):
-		target_acceleration["y"] = (-(gravity_acceleration_scalar)) + lower_gravity_scalar
+	if (jump_status == JumpStates.NORMAL):
+		if (is_on_floor()):
+			target_acceleration["y"] = 0
+			target_velocity["y"] = 0
+		
+		# If the player is on the ground and presses the jump action key, begin a jump.
+		if (Input.is_action_pressed("jump") and is_on_floor() and !get_parent().rotating):
+			target_acceleration["y"] = applied_normal_acceleration_scalar["y"]
+		
+		# If the player continues to press the "jump" action after starting the jump from the floor, lower the (scalar) acceleration due to gravity to provide the player more time in the air.
+		if (Input.is_action_pressed("jump") and !is_on_floor() and !get_parent().rotating and (target_velocity["y"] > 0) and (previous_target_acceleration > -(gravity_acceleration_scalar))):
+			target_acceleration["y"] = (-(gravity_acceleration_scalar)) + lower_gravity_scalar
+	elif (jump_status == JumpStates.JUST_OVERRIDDEN):
+		if (is_on_floor):
+			target_acceleration["y"] = applied_normal_acceleration_scalar["y"]
+		jump_status = JumpStates.OVERRIDDEN
+	elif (jump_status == JumpStates.OVERRIDDEN):
+		if ((Input.is_action_pressed("action_key_a")) and (target_velocity["y"] > 0) and (previous_target_acceleration > -(gravity_acceleration_scalar))):
+			target_acceleration["y"] = (-(gravity_acceleration_scalar)) + lower_gravity_scalar
 	
 	if (abs((target_acceleration["y"] * delta) + target_velocity["y"]) > max_velocity_scalar["y"]):
 		target_velocity["y"] = (abs(target_velocity["y"])/target_velocity["y"]) * max_velocity_scalar["y"]
@@ -190,10 +218,7 @@ func _physics_process(delta):
 		velocity.z = (cos(rotation.y) * target_velocity["z"]) + (-(sin(rotation.y) * target_velocity["x"]))
 		
 		move_and_slide()
-		#print(str(get_slide_collision_count()))
 		check_looking_up()
-		
-		#print(str(get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel))))
 
 func _on_object_detector_area_entered(area):
 	var nodenameunwantedchars = [".","/"]
@@ -203,12 +228,16 @@ func _on_object_detector_area_entered(area):
 		player_died.emit()
 	if "start" in area.name:
 		move_back_level.emit(true, get_node(str(area.get_parent().previouslevel).replace("../", "../Levels/")))
-		#global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().previouslevel).replace("../", "")).get_node("end").global_position
 	if "end" in area.name:
 		move_forward_level.emit(true, get_node(str(area.get_parent().nextlevel).replace("../", "../Levels/")))
-		#global_transform.origin = get_tree().get_root().get_node("Main").get_node("Levels").get_node(str(area.get_parent().nextlevel).replace("../", "")).get_node("start").global_position
-
 
 func _on_object_detector_body_entered(body):
 	if "jumppad" in body.name:
 		target_velocity["y"] += 15
+
+func _on_platform_transition_started():
+	jump_status = JumpStates.JUST_OVERRIDDEN
+
+func _on_platform_transition_stopped():
+	jump_status = JumpStates.NORMAL
+	target_acceleration["y"] = -(gravity_acceleration_scalar)
