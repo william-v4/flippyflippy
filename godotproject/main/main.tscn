@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://crjfekrbdt25r"]
+[gd_scene load_steps=38 format=3 uid="uid://crjfekrbdt25r"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_7b45r"]
 [ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://player/player.tscn" id="2_iyr3n"]
@@ -12,6 +12,7 @@
 [ext_resource type="AudioStream" uid="uid://bkl150x42c6bh" path="res://resources/audio/flip.ogg" id="9_8baam"]
 [ext_resource type="AudioStream" uid="uid://b3g5v2adcqiuf" path="res://resources/audio/menu.ogg" id="10_3k4r4"]
 [ext_resource type="AudioStream" uid="uid://do0lnmrach3h8" path="res://resources/audio/counterparttheme.ogg" id="12_1byav"]
+[ext_resource type="AudioStream" uid="uid://rndieaae8nrm" path="res://resources/audio/epicchorale.wav" id="13_5e12w"]
 
 [sub_resource type="Gradient" id="Gradient_heoo6"]
 interpolation_mode = 2
@@ -286,12 +287,12 @@ libraries = {
 nextlevel = NodePath("../level1")
 
 [node name="level1" parent="Levels" instance=ExtResource("3_l1k58")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.2972, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -500, 0, 0)
 previouslevel = NodePath("../TutorialLevel")
 nextlevel = NodePath("../level2")
 
 [node name="level2" parent="Levels" instance=ExtResource("4_c6ocs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.311, 0, -51.2247)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 500, 0, -51.225)
 previouslevel = NodePath("../level1")
 
 [node name="Player" parent="." instance=ExtResource("2_iyr3n")]
@@ -421,9 +422,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FallDetector"]
 shape = SubResource("BoxShape3D_uic4c")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-collision_layer = 3
-collision_mask = 3
+[node name="StaticBody3D" type="Node3D" parent="."]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.3324, -12.3083, -23.9667)
@@ -457,6 +456,14 @@ volume_db = -10.0
 stream = ExtResource("12_1byav")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="endgame"]
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(0.952497, 0, -0.304548, 0, 1, 0, 0.304548, 0, 0.952497, 2.90331, 0.720252, -16.1188)
+text = "I wonder what SHIFT or E does"
+
+[node name="choraleplayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("13_5e12w")
+volume_db = -10.0
 
 [connection signal="gamefinished" from="Player" to="." method="_on_player_gamefinished"]
 [connection signal="playerhurt" from="Player" to="." method="_on_player_playerhurt"]

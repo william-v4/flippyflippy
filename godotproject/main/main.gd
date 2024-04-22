@@ -184,8 +184,11 @@ func rotate_if_requested():
 		rotating = true
 		current_platform = Platform.PARALLEL
 		if firstjump:
+			$jukebox.stop()
 			$Levels/TutorialLevel.parallelhidden = false
-			# Engine.time_scale = 0.02
+			$Label3D.visible = false
+			$choraleplayer.play()
+			Engine.time_scale = 0.011
 			$MainWorldEnvironment/AnimationPlayer.play("firstjumpfade")
 		else: 
 			$soundeffects/flip.play()
@@ -315,6 +318,8 @@ func _process(delta):
 	check_rotation_status()
 	check_menu_transition_status()
 	setportalcams()
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _on_player_died():
 	print("reset_requested")
@@ -397,9 +402,12 @@ func _on_player_playerhurt():
 	paused = true
 
 func _on_player_gamefinished():
+	current_level = $Levels/TutorialLevel
 	$jukebox/fader.play("fadeout")
 	$endgame/theme.play()
 	$Player.position = Vector3(0, 2, 0)
 	$MenuElements/messagescreen.visible = true
 	$MenuElements/messagescreen/Head.set_text("Thanks for playing")
 	$MenuElements/messagescreen/Body.set_text("You've united the 3 multiverses and completed the game.\nThat is all for now, from the game jam version...")
+	$Levels/level1.position.x = -50
+	$Levels/level2.position.x = 50

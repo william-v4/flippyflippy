@@ -28,6 +28,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="Camera3D" type="Camera3D" parent="PlayerCameraMarker"]
 current = true
+far = 200.0
 
 [node name="ObjectDetector" type="Area3D" parent="."]
 disable_mode = 1

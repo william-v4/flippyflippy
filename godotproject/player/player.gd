@@ -221,6 +221,8 @@ func _physics_process(delta):
 		
 		move_and_slide()
 		check_looking_up()
+		if position.y < -100:
+			player_died.emit()
 
 func _on_object_detector_area_entered(area):
 	var nodenameunwantedchars = [".","/"]
