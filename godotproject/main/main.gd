@@ -18,7 +18,7 @@ var menu_label : Object
 var levelrotators : Array
 var paused : bool = true
 var reset_level : int
-
+var ambiencetrack = preload("res://resources/audio/counterpartambience1.ogg")
 # This is to be replaced with current_level
 var current_level_path : String = "Levels/TutorialLevel/"
 var current_level : Object
@@ -187,6 +187,8 @@ func rotate_if_requested():
 			$Levels/TutorialLevel.parallelhidden = false
 			# Engine.time_scale = 0.02
 			$MainWorldEnvironment/AnimationPlayer.play("firstjumpfade")
+		else: 
+			$soundeffects/flip.play()
 	elif (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.PARALLEL) and !rotating and !player.movement_paused and (player.position.y < 10)): 
 		disable_platform_physics(true, false)
 		platform_transition_started.emit()
@@ -197,6 +199,8 @@ func rotate_if_requested():
 		current_platform = Platform.MAIN
 		if player.position.y <= 5:
 			player.position.y += 5
+		if !firstjump:
+			$soundeffects/flip.play()
 
 func firstrotation():
 	if rotating:
@@ -208,6 +212,7 @@ func firstrotation():
 func switch_menu_if_requested():
 	if (Input.is_action_just_pressed("return") and !paused and !rotating and transition_status == Transition.NONE and screen_status == Screen.STANDARD):
 		print("pause requested")
+		$soundeffects/menu.play()
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		player.reset_player_movement()
 		player.set_movement_paused(true)
@@ -282,6 +287,11 @@ func setportalcams():
 	$Levels/level2/start/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level2.previouslevel) + "/backview")
 	# $Levels/level2/end/MeshInstance3D.mesh.surface_get_material(0).albedo_texture.viewport_path = NodePath(str($Levels/level2.nextlevel) + "/frontview")
 
+func _input(event):
+	if Input.is_action_just_pressed("muteambience"):
+		if $jukebox.stream == ambiencetrack:
+			$jukebox.stop()
+
 func _process(delta):
 	if firstjump:
 		firstrotation()
@@ -346,3 +356,15 @@ func _on_player_move_forward_level(pause_requested, new_level):
 		reset_level = ResetPoint.NONE
 		
 		player.set_movement_paused(false)
+
+
+func _on_timeaftergamestart_timeout():
+	$jukebox/fader.play("fadeout")
+	print("fadingout")
+	await $jukebox/fader.animation_finished
+	print("fadedout")
+	$jukebox.set_stream(ambiencetrack)
+	print("ambienceloaded")
+	$jukebox/fader.play("fadein")
+	print("fadedin")
+	$jukebox.play()

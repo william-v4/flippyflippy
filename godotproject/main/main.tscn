@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://crjfekrbdt25r"]
+[gd_scene load_steps=35 format=3 uid="uid://crjfekrbdt25r"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_7b45r"]
 [ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://player/player.tscn" id="2_iyr3n"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://dtrivq2hu0805" path="res://resources/levels/level2.tscn" id="4_c6ocs"]
 [ext_resource type="FontFile" uid="uid://d14q7u8yny5n0" path="res://resources/fonts/Lato-Bold.ttf" id="5_a2ihg"]
 [ext_resource type="AudioStream" uid="uid://dvr6y4u25upp3" path="res://resources/audio/intro.ogg" id="6_7il4k"]
+[ext_resource type="AudioStream" uid="uid://bkl150x42c6bh" path="res://resources/audio/flip.ogg" id="9_8baam"]
+[ext_resource type="AudioStream" uid="uid://b3g5v2adcqiuf" path="res://resources/audio/menu.ogg" id="10_3k4r4"]
 
 [sub_resource type="Gradient" id="Gradient_heoo6"]
 interpolation_mode = 2
@@ -196,6 +198,60 @@ _data = {
 "fade_out_slow": SubResource("Animation_giyit")
 }
 
+[sub_resource type="Animation" id="Animation_xvuey"]
+resource_name = "fadeout"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:volume_db")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -80.0]
+}
+
+[sub_resource type="Animation" id="Animation_xcc0c"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:volume_db")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_f7ml3"]
+resource_name = "fadein"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:volume_db")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [-80.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_jjmcv"]
+_data = {
+"RESET": SubResource("Animation_xcc0c"),
+"fadein": SubResource("Animation_f7ml3"),
+"fadeout": SubResource("Animation_xvuey")
+}
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_uic4c"]
 size = Vector3(256, 1, 256)
 
@@ -308,6 +364,16 @@ horizontal_alignment = 1
 stream = ExtResource("6_7il4k")
 autoplay = true
 
+[node name="fader" type="AnimationPlayer" parent="jukebox"]
+libraries = {
+"": SubResource("AnimationLibrary_jjmcv")
+}
+
+[node name="timeaftergamestart" type="Timer" parent="jukebox"]
+wait_time = 130.0
+one_shot = true
+autostart = true
+
 [node name="FallDetector" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
 
@@ -333,3 +399,15 @@ shape = SubResource("BoxShape3D_bxrrb")
 [node name="CollisionShape3D4" type="CollisionShape3D" parent="StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5359, -11.8139, -10.6788)
 shape = SubResource("BoxShape3D_3rupf")
+
+[node name="soundeffects" type="Node" parent="."]
+
+[node name="flip" type="AudioStreamPlayer" parent="soundeffects"]
+stream = ExtResource("9_8baam")
+volume_db = -10.0
+
+[node name="menu" type="AudioStreamPlayer" parent="soundeffects"]
+stream = ExtResource("10_3k4r4")
+volume_db = -10.0
+
+[connection signal="timeout" from="jukebox/timeaftergamestart" to="." method="_on_timeaftergamestart_timeout"]
