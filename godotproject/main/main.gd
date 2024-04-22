@@ -34,7 +34,7 @@ enum Platform {MAIN, PARALLEL}
 enum ResetPoint {NONE, START, END}
 enum Transition {NONE, ZOOM_OUT, ZOOM_IN}
 enum Screen {STANDARD, FADE_OUT, FADE_IN}
-enum Message {INTRO, PAUSE, RESTART, SWITCHED_LEVELS}
+enum Message {INTRO, PAUSE, RESTART, SWITCHED_LEVELS, HIT}
 
 const main_base_platform_collision_shape : String = "LevelComponents/MainPlatform/BasePlatform/PlatformCollisionShape"
 const main_spikes_collision_shape : String = "LevelComponents/MainPlatform/HarmfulObjects/Spikes/SpikesCollisionShape"
@@ -239,21 +239,36 @@ func request_pause_menu(message : int):
 			menu_label.visible = false
 		Message.PAUSE:
 			fade_out()
-			menu_label.visible = true
-			menu_label.set_text("Game paused\nPress ESC to resume")
+			# menu_label.visible = true
+			# menu_label.set_text("Game paused\nPress ESC to resume")
+			$MenuElements/messagescreen.visible = true
+			$MenuElements/messagescreen/Head.set_text("paused")
+			$MenuElements/messagescreen/Body.set_text("press ESC to resume")
 		Message.RESTART:
-			menu_label.visible = true
+			# menu_label.visible = true
 			fade_out()
-			menu_label.set_text("You died\nPress ESC to restart")
+			# menu_label.set_text("You died\nPress ESC to restart")
+			$MenuElements/messagescreen.visible = true
+			$MenuElements/messagescreen/Head.set_text("you've clipped out of existence")
+			$MenuElements/messagescreen/Body.set_text("press ESC to restart")
 		Message.SWITCHED_LEVELS:
-			menu_label.visible = true
+			# menu_label.visible = true
 			fade_out()
-			menu_label.set_text("You switched levels\nPress ESC to continue")
+			# menu_label.set_text("You switched levels\nPress ESC to continue")
+			$MenuElements/messagescreen.visible = true
+			$MenuElements/messagescreen/Head.set_text("look who got to the other side")
+			$MenuElements/messagescreen/Body.set_text("press ESC to continue")
+		Message.HIT:
+			fade_out()
+			$MenuElements/messagescreen.visible = true
+			$MenuElements/messagescreen/Head.set_text("ouch")
+			$MenuElements/messagescreen/Body.set_text("press ESC and no touch spike")
 	
 	print("step one of pause")
 
 func request_resume():
 	$MenuElements/startscreen.visible = false
+	$MenuElements/messagescreen.visible = false
 	$MainWorldEnvironment/AnimationPlayer.play("lighten")
 	zoom_in()
 	menu_label.set_visible(false)
@@ -368,3 +383,15 @@ func _on_timeaftergamestart_timeout():
 	$jukebox/fader.play("fadein")
 	print("fadedin")
 	$jukebox.play()
+
+func _on_player_playerhurt():
+	print("reset_requested")
+	print(screen_status)
+	print(transition_status)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	player.reset_player_movement()
+	player.set_movement_paused(true)
+	$MainWorldEnvironment/AnimationPlayer.play("darken")
+	request_pause_menu(Message.HIT)
+	reset_level = ResetPoint.START
+	paused = true

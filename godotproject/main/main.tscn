@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://crjfekrbdt25r"]
+[gd_scene load_steps=36 format=3 uid="uid://crjfekrbdt25r"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_7b45r"]
 [ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://player/player.tscn" id="2_iyr3n"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dtrivq2hu0805" path="res://resources/levels/level2.tscn" id="4_c6ocs"]
 [ext_resource type="FontFile" uid="uid://d14q7u8yny5n0" path="res://resources/fonts/Lato-Bold.ttf" id="5_a2ihg"]
 [ext_resource type="AudioStream" uid="uid://dvr6y4u25upp3" path="res://resources/audio/intro.ogg" id="6_7il4k"]
+[ext_resource type="FontFile" uid="uid://cqc00euwopw8n" path="res://resources/fonts/Lato-Regular.ttf" id="8_ex60j"]
 [ext_resource type="AudioStream" uid="uid://bkl150x42c6bh" path="res://resources/audio/flip.ogg" id="9_8baam"]
 [ext_resource type="AudioStream" uid="uid://b3g5v2adcqiuf" path="res://resources/audio/menu.ogg" id="10_3k4r4"]
 
@@ -360,6 +361,45 @@ theme_override_font_sizes/font_size = 36
 text = "Press ESC to start"
 horizontal_alignment = 1
 
+[node name="messagescreen" type="Control" parent="MenuElements"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Head" type="Label" parent="MenuElements/messagescreen"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -84.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("5_a2ihg")
+theme_override_font_sizes/font_size = 48
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="Body" type="Label" parent="MenuElements/messagescreen"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = 28.0
+offset_bottom = 51.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("8_ex60j")
+theme_override_font_sizes/font_size = 20
+text = "press ESC to resume"
+horizontal_alignment = 1
+
 [node name="jukebox" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_7il4k")
 autoplay = true
@@ -410,4 +450,5 @@ volume_db = -10.0
 stream = ExtResource("10_3k4r4")
 volume_db = -10.0
 
+[connection signal="playerhurt" from="Player" to="." method="_on_player_playerhurt"]
 [connection signal="timeout" from="jukebox/timeaftergamestart" to="." method="_on_timeaftergamestart_timeout"]
