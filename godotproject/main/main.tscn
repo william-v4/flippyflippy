@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://crjfekrbdt25r"]
+[gd_scene load_steps=29 format=3 uid="uid://crjfekrbdt25r"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_7b45r"]
 [ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://player/player.tscn" id="2_iyr3n"]
@@ -199,6 +199,18 @@ _data = {
 [sub_resource type="BoxShape3D" id="BoxShape3D_uic4c"]
 size = Vector3(256, 1, 256)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_t3g12"]
+size = Vector3(24.3054, 1, 48.9333)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_x5ghe"]
+size = Vector3(32.9348, 1, 18.856)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bxrrb"]
+size = Vector3(70.0073, 0.001, 42.6401)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3rupf"]
+size = Vector3(51.8267, 1, 37.662)
+
 [node name="Main" type="Node"]
 script = ExtResource("1_7b45r")
 
@@ -301,3 +313,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FallDetector"]
 shape = SubResource("BoxShape3D_uic4c")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.3324, -12.3083, -23.9667)
+shape = SubResource("BoxShape3D_t3g12")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(0.986788, -0.162017, 0, 0.162017, 0.986788, 0, 0, 0, 1, -17.6516, -10.5556, -8.92798)
+shape = SubResource("BoxShape3D_x5ghe")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(0.990738, 0.135785, 0, -0.135785, 0.990738, 0, 0, 0, 1, 35.2548, -8.47554, -20.8201)
+shape = SubResource("BoxShape3D_bxrrb")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5359, -11.8139, -10.6788)
+shape = SubResource("BoxShape3D_3rupf")

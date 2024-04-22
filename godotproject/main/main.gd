@@ -187,7 +187,7 @@ func rotate_if_requested():
 			$Levels/TutorialLevel.parallelhidden = false
 			# Engine.time_scale = 0.02
 			$MainWorldEnvironment/AnimationPlayer.play("firstjumpfade")
-	elif (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.PARALLEL) and !rotating and !player.movement_paused and player.is_on_floor()): 
+	elif (Input.is_action_just_pressed("action_key_a") and (current_platform == Platform.PARALLEL) and !rotating and !player.movement_paused and (player.position.y < 10)): 
 		disable_platform_physics(true, false)
 		platform_transition_started.emit()
 		# platform_animation_player.play_backwards("rotatetoparallel")
@@ -195,6 +195,8 @@ func rotate_if_requested():
 			a.play_backwards("rotatetoparallel")
 		rotating = true
 		current_platform = Platform.MAIN
+		if player.position.y <= 5:
+			player.position.y += 5
 
 func firstrotation():
 	if rotating:

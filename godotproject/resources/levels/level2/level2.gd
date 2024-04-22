@@ -9,8 +9,8 @@ func _ready():
 	$split1/parallelmovecube1/AnimationPlayer.play("move")
 	$split1/parallelmovepad1/AnimationPlayer.play("move")
 	$split2/RigidBody3D/AnimationPlayer.play("move")
-	$split3/current3/RigidBody3D/AnimationPlayer.play("move")
-	$split3/parallel3/RigidBody3D/AnimationPlayer.play("move")
+	$split3/current3/currentlog1/AnimationPlayer.play("move")
+	$split3/parallel3/parallellog1/AnimationPlayer.play("move")
 	
 func _process(delta):
 	$frontview/frontviewcamera.global_position = global_position + Vector3(1, -8, 0)
