@@ -4,6 +4,7 @@ signal player_died
 signal move_back_level(pause_requested : bool, new_level : NodePath)
 signal move_forward_level(pause_requested : bool, new_level : NodePath)
 signal playerhurt
+signal gamefinished
 
 # Variable for normal acceleration applied by the player
 @export var applied_normal_acceleration_scalar : Dictionary = {"x" = 20, "y" = 200, "z" = 20}
@@ -233,6 +234,8 @@ func _on_object_detector_area_entered(area):
 		move_forward_level.emit(true, get_node(str(area.get_parent().nextlevel).replace("../", "../Levels/")))
 	if "Spike" in area.name:
 		playerhurt.emit()
+	if "finish" in area.name:
+		gamefinished.emit()
 
 func _on_object_detector_body_entered(body):
 	if "jumppad" in body.name:

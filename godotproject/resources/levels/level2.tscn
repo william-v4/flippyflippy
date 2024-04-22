@@ -669,10 +669,10 @@ shadow_mesh = SubResource("ArrayMesh_eimro")
 data = PackedVector3Array(21.9993, 0, 3.9999, -22, 0, -4, 21.9993, 0, -4, 21.9993, 0, 3.9999, -22, 0, 3.9999, -22, 0, -4)
 
 [sub_resource type="BoxMesh" id="BoxMesh_la8ma"]
-size = Vector3(6, 2, 1)
+size = Vector3(30, 2, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_xqd6n"]
-size = Vector3(6, 2, 1)
+size = Vector3(30, 2, 1)
 
 [sub_resource type="Animation" id="Animation_x844v"]
 length = 0.001
@@ -1180,13 +1180,13 @@ top_level = true
 [node name="Camera3D" type="Camera3D" parent="backview/backviewcamera"]
 fov = 97.2689
 
-[node name="end" type="Area3D" parent="."]
+[node name="finish" type="Area3D" parent="."]
 transform = Transform3D(-4.37114e-08, -1, 0, -1, 4.37114e-08, 0, 0, 0, -1, 35, -8, 40)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="end"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="finish"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("CylinderMesh_ce5gs")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="end"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="finish"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 shape = SubResource("CylinderShape3D_4yeh8")

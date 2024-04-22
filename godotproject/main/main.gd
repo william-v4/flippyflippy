@@ -395,3 +395,11 @@ func _on_player_playerhurt():
 	request_pause_menu(Message.HIT)
 	reset_level = ResetPoint.START
 	paused = true
+
+func _on_player_gamefinished():
+	$jukebox/fader.play("fadeout")
+	$endgame/theme.play()
+	$Player.position = Vector3(0, 2, 0)
+	$MenuElements/messagescreen.visible = true
+	$MenuElements/messagescreen/Head.set_text("Thanks for playing")
+	$MenuElements/messagescreen/Body.set_text("You've united the 3 multiverses and completed the game.\nThere will be more in the updates.")
