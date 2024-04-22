@@ -242,27 +242,27 @@ func request_pause_menu(message : int):
 			# menu_label.visible = true
 			# menu_label.set_text("Game paused\nPress ESC to resume")
 			$MenuElements/messagescreen.visible = true
-			$MenuElements/messagescreen/Head.set_text("paused")
-			$MenuElements/messagescreen/Body.set_text("press ESC to resume")
+			$MenuElements/messagescreen/Head.set_text("Paused")
+			$MenuElements/messagescreen/Body.set_text("Press ESC to resume")
 		Message.RESTART:
 			# menu_label.visible = true
 			fade_out()
 			# menu_label.set_text("You died\nPress ESC to restart")
 			$MenuElements/messagescreen.visible = true
-			$MenuElements/messagescreen/Head.set_text("you've clipped out of existence")
-			$MenuElements/messagescreen/Body.set_text("press ESC to restart")
+			$MenuElements/messagescreen/Head.set_text("You fell out of the map")
+			$MenuElements/messagescreen/Body.set_text("Press ESC to restart")
 		Message.SWITCHED_LEVELS:
 			# menu_label.visible = true
 			fade_out()
 			# menu_label.set_text("You switched levels\nPress ESC to continue")
 			$MenuElements/messagescreen.visible = true
-			$MenuElements/messagescreen/Head.set_text("look who got to the other side")
-			$MenuElements/messagescreen/Body.set_text("press ESC to continue")
+			$MenuElements/messagescreen/Head.set_text("You have switchted levels")
+			$MenuElements/messagescreen/Body.set_text("Press ESC to continue")
 		Message.HIT:
 			fade_out()
 			$MenuElements/messagescreen.visible = true
-			$MenuElements/messagescreen/Head.set_text("ouch")
-			$MenuElements/messagescreen/Body.set_text("press ESC and no touch spike")
+			$MenuElements/messagescreen/Head.set_text("You died")
+			$MenuElements/messagescreen/Body.set_text("Press ESC")
 	
 	print("step one of pause")
 
@@ -402,4 +402,4 @@ func _on_player_gamefinished():
 	$Player.position = Vector3(0, 2, 0)
 	$MenuElements/messagescreen.visible = true
 	$MenuElements/messagescreen/Head.set_text("Thanks for playing")
-	$MenuElements/messagescreen/Body.set_text("You've united the 3 multiverses and completed the game.\nThere will be more in the updates.")
+	$MenuElements/messagescreen/Body.set_text("You've united the 3 multiverses and completed the game.\nThat is all for now, from the game jam version...")
