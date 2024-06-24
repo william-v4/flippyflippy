@@ -1,4 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://ceewq447a6d84"]
+[gd_scene load_steps=5 format=3 uid="uid://ceewq447a6d84"]
+
+[ext_resource type="Script" path="res://scenes/main/main.gd" id="1_jekk6"]
+[ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://scenes/player/player.tscn" id="1_lweby"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_ey6qe"]
 size = Vector3(10, 1, 10)
@@ -7,6 +10,7 @@ size = Vector3(10, 1, 10)
 size = Vector3(10, 1, 10)
 
 [node name="Main" type="Node"]
+script = ExtResource("1_jekk6")
 
 [node name="Levels" type="Node3D" parent="."]
 
@@ -16,9 +20,14 @@ size = Vector3(10, 1, 10)
 
 [node name="BasePlatform" type="StaticBody3D" parent="Levels/TestPlatform/MainPlatform"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+collision_layer = 2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Levels/TestPlatform/MainPlatform/BasePlatform"]
 mesh = SubResource("BoxMesh_ey6qe")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Levels/TestPlatform/MainPlatform/BasePlatform"]
 shape = SubResource("BoxShape3D_un1jb")
+
+[node name="Player" parent="." instance=ExtResource("1_lweby")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+collision_mask = 2

@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://cr33k6wol2uje"]
+
+[ext_resource type="Script" path="res://scenes/player/player.gd" id="1_2x3ex"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_4oal2"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gbkq3"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s0u8o"]
+radius = 0.6
+height = 2.2
+
+[node name="Player" type="CharacterBody3D"]
+collision_mask = 42
+script = ExtResource("1_2x3ex")
+gravity_acceleration_scalar = 6
+lower_gravity_scalar = 1
+
+[node name="PlayerMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_4oal2")
+skeleton = NodePath("")
+
+[node name="PlayerCollisionShape" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_gbkq3")
+
+[node name="PlayerCameraMarker" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Camera3D" type="Camera3D" parent="PlayerCameraMarker"]
+current = true
+far = 200.0
+
+[node name="ObjectDetector" type="Area3D" parent="."]
+disable_mode = 1
+collision_layer = 15
+collision_mask = 63
+
+[node name="DetectorCollisionShape" type="CollisionShape3D" parent="ObjectDetector"]
+shape = SubResource("CapsuleShape3D_s0u8o")
+
+[connection signal="area_entered" from="ObjectDetector" to="." method="_on_object_detector_area_entered"]
+[connection signal="body_entered" from="ObjectDetector" to="." method="_on_object_detector_body_entered"]
