@@ -99,7 +99,7 @@ func calculate_ground_velocity(delta : float):
 	elif (abs(target_acceleration["x"]) > 0) and (target_acceleration["z"] == 0):
 		decelerate_plane(delta, "z")
 	# If the player is not applying acceleration on either plane, begin applying friction.
-	elif (pow((pow(target_acceleration["x"], 2) + pow(target_acceleration["z"], 2)), 1/2.0) == 0):
+	elif (target_acceleration["x"] == 0 and target_acceleration["y"] == 0):
 		apply_friction(delta)
 	
 	# If the target_acceleration on both planes are accelerating at applied_normal_acceleration_scalar, then lower the resultant target_acceleration
@@ -135,6 +135,10 @@ func lower_resultant_acceleration(current_x_acceleration : int, current_z_accele
 	target_acceleration["x"] = cos(atan2(current_z_acceleration, current_x_acceleration)) * maximum_acceleration
 	target_acceleration["z"] = sin(atan2(current_z_acceleration, current_x_acceleration)) * maximum_acceleration
 
+func lower_resultant_velocity(current_x_velocity : float, current_z_velocity : float):
+	target_velocity["x"] = cos(atan2(current_z_velocity, current_x_velocity)) * max_velocity_scalar["x"]
+	target_velocity["z"] = sin(atan2(current_z_velocity, current_x_velocity)) * max_velocity_scalar["z"]
+
 func apply_friction(delta : float):
 	# If changing target_velocity by the friction acceleration value will result in a non-zero value, set target_velocity and target_acceleration of that plane to 0.
 	if ((pow((pow(target_velocity["x"], 2) + pow(target_velocity["z"], 2)), 1/2.0) - (friction_acceleration_scalar * delta)) < 0):
@@ -149,10 +153,6 @@ func decelerate_plane(delta : float, plane_to_lower : String):
 		target_velocity[plane_to_lower] = 0
 	else:
 		target_acceleration[plane_to_lower] = (target_velocity[plane_to_lower] / abs(target_velocity[plane_to_lower]) * -1) * (applied_normal_acceleration_scalar[plane_to_lower])
-
-func lower_resultant_velocity(current_x_velocity : float, current_z_velocity : float):
-	target_velocity["x"] = cos(atan2(current_z_velocity, current_x_velocity)) * max_velocity_scalar["x"]
-	target_velocity["z"] = sin(atan2(current_z_velocity, current_x_velocity)) * max_velocity_scalar["z"]
 
 func calculate_y_velocity(delta : float):
 	var previous_target_acceleration : int = target_acceleration["y"]

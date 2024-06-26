@@ -1,5 +1,7 @@
 extends Node
 
+var rotating = false
+
 func _ready():
 	set_game_paused(true)
 

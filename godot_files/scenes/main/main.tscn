@@ -1,16 +1,48 @@
-[gd_scene load_steps=5 format=3 uid="uid://ceewq447a6d84"]
+[gd_scene load_steps=11 format=3 uid="uid://ceewq447a6d84"]
 
 [ext_resource type="Script" path="res://scenes/main/main.gd" id="1_jekk6"]
 [ext_resource type="PackedScene" uid="uid://cr33k6wol2uje" path="res://scenes/player/player.tscn" id="1_lweby"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_2i308"]
+sky_top_color = Color(1, 1, 1, 1)
+sky_horizon_color = Color(0.470588, 0.470588, 0.470588, 1)
+ground_bottom_color = Color(0, 0, 0, 1)
+ground_horizon_color = Color(0.470588, 0.470588, 0.470588, 1)
+
+[sub_resource type="Sky" id="Sky_dy80m"]
+sky_material = SubResource("ProceduralSkyMaterial_2i308")
+
+[sub_resource type="Environment" id="Environment_nff8l"]
+background_mode = 2
+sky = SubResource("Sky_dy80m")
+ambient_light_source = 2
+fog_enabled = true
+fog_light_color = Color(1, 1, 1, 1)
+fog_height_density = 16.0
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_0kro2"]
+
 [sub_resource type="BoxMesh" id="BoxMesh_ey6qe"]
-size = Vector3(10, 1, 10)
+resource_local_to_scene = true
+lightmap_size_hint = Vector2i(104, 66)
+material = SubResource("ORMMaterial3D_0kro2")
+size = Vector3(50, 1, 10)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_un1jb"]
-size = Vector3(10, 1, 10)
+size = Vector3(50, 1, 10)
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_iqeeo"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5u17k"]
+material = SubResource("ORMMaterial3D_iqeeo")
+size = Vector3(50, 1, 10)
 
 [node name="Main" type="Node"]
 script = ExtResource("1_jekk6")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_nff8l")
 
 [node name="Levels" type="Node3D" parent="."]
 
@@ -23,9 +55,35 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 collision_layer = 2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Levels/TestPlatform/MainPlatform/BasePlatform"]
+cast_shadow = 0
 mesh = SubResource("BoxMesh_ey6qe")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Levels/TestPlatform/MainPlatform/BasePlatform"]
+shape = SubResource("BoxShape3D_un1jb")
+
+[node name="ParallelPlatform" type="Node3D" parent="Levels/TestPlatform/MainPlatform"]
+
+[node name="MainParallel" type="StaticBody3D" parent="Levels/TestPlatform/MainPlatform/ParallelPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+collision_layer = 2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Levels/TestPlatform/MainPlatform/ParallelPlatform/MainParallel"]
+cast_shadow = 0
+mesh = SubResource("BoxMesh_5u17k")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Levels/TestPlatform/MainPlatform/ParallelPlatform/MainParallel"]
+shape = SubResource("BoxShape3D_un1jb")
+
+[node name="MonitoringParallel" type="StaticBody3D" parent="Levels/TestPlatform/MainPlatform/ParallelPlatform"]
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.5, 0)
+visible = false
+collision_layer = 2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Levels/TestPlatform/MainPlatform/ParallelPlatform/MonitoringParallel"]
+cast_shadow = 0
+mesh = SubResource("BoxMesh_5u17k")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Levels/TestPlatform/MainPlatform/ParallelPlatform/MonitoringParallel"]
 shape = SubResource("BoxShape3D_un1jb")
 
 [node name="Player" parent="." instance=ExtResource("1_lweby")]
