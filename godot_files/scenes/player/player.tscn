@@ -11,7 +11,6 @@ radius = 0.6
 height = 2.2
 
 [node name="Player" type="CharacterBody3D"]
-collision_mask = 42
 script = ExtResource("1_2x3ex")
 gravity_acceleration_scalar = 6
 lower_gravity_scalar = 1
@@ -27,6 +26,7 @@ shape = SubResource("CapsuleShape3D_gbkq3")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="Camera3D" type="Camera3D" parent="PlayerCameraMarker"]
+cull_mask = 1048573
 current = true
 far = 200.0
 

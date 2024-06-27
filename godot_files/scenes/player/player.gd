@@ -51,6 +51,9 @@ var movement_paused : bool
 var mousesensx : float = 0.2
 var mousesensy : float = 0.1
 
+# Variable representing the z distance from the start of the level
+var relative_z_distance : float = 0.0
+
 func _ready():
 	camera_marker = get_node("PlayerCameraMarker")
 	camera = get_node("PlayerCameraMarker/Camera3D")
@@ -99,7 +102,7 @@ func calculate_ground_velocity(delta : float):
 	elif (abs(target_acceleration["x"]) > 0) and (target_acceleration["z"] == 0):
 		decelerate_plane(delta, "z")
 	# If the player is not applying acceleration on either plane, begin applying friction.
-	elif (target_acceleration["x"] == 0 and target_acceleration["y"] == 0):
+	elif (target_acceleration["x"] == 0 and target_acceleration["z"] == 0):
 		apply_friction(delta)
 	
 	# If the target_acceleration on both planes are accelerating at applied_normal_acceleration_scalar, then lower the resultant target_acceleration
@@ -196,6 +199,12 @@ func reset_rotation():
 	rotation = Vector3(0, 0, 0)
 	camera_marker.set_rotation(Vector3(0, 0, 0))
 
+func determine_relative_z_distance(delta : float) -> void:
+	relative_z_distance = relative_z_distance + (velocity.z * delta)
+
+func get_relative_z_distance() -> float:
+	return relative_z_distance
+
 # runs whenever input is received
 func _input(event):
 	# camera movement with mouse
@@ -218,6 +227,9 @@ func _physics_process(delta):
 		velocity.x = (cos(rotation.y) * target_velocity["x"]) + (sin(rotation.y) * target_velocity["z"])
 		velocity.y = target_velocity["y"]
 		velocity.z = (cos(rotation.y) * target_velocity["z"]) + (-(sin(rotation.y) * target_velocity["x"]))
+		
+		determine_relative_z_distance(delta)
+		print(target_acceleration.x)
 		
 		move_and_slide()
 		check_looking_up()
